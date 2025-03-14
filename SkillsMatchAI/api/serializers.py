@@ -109,9 +109,15 @@ class PositionListSerializer(serializers.ModelSerializer):
         fields = ('id', 'job', 'job_title', 'job_level', 'location', 'status', 'employee_name')
     
     def get_employee_name(self, obj):
-        if obj.employee:
-            return f"{obj.employee.first_name} {obj.employee.last_name}"
-        return None
+        try:
+            if hasattr(obj, 'employee') and obj.employee is not None:
+                from jobs.models import Employee
+                employee = Employee.objects.get(id=obj.employee.id)
+                return f"{employee.first_name} {employee.last_name}"
+            return None
+        except Exception as e:
+            print(f"Error getting employee name: {e}")
+            return "Unknown Employee"
 
 
 class PositionDetailSerializer(serializers.ModelSerializer):

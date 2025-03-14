@@ -23,6 +23,12 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
+    
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def me(self, request):
+        """Récupère les informations de l'utilisateur connecté."""
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
 
 
 class JobFamilyViewSet(viewsets.ModelViewSet):
