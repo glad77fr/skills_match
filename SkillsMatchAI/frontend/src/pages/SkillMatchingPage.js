@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Typography, Paper } from '@mui/material';
-import MainLayout from '../components/layout/MainLayout';
 
 /**
  * Page de matching de compétences
@@ -8,18 +7,16 @@ import MainLayout from '../components/layout/MainLayout';
  */
 const SkillMatchingPage = () => {
   return (
-    <MainLayout>
-      <Box>
-        <Typography variant="h4" gutterBottom>
-          Matching de compétences
+    <Box>
+      <Typography variant="h4" gutterBottom>
+        Matching de compétences
+      </Typography>
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="body1">
+          Cette page est en cours de développement. Elle permettra de faire correspondre les compétences des employés avec les besoins des postes.
         </Typography>
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="body1">
-            Cette page est en cours de développement. Elle permettra de faire correspondre les compétences des employés avec les besoins des postes.
-          </Typography>
-        </Paper>
-      </Box>
-    </MainLayout>
+      </Paper>
+    </Box>
   );
 };
 

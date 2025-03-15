@@ -69,6 +69,54 @@ L'application frontend est organisée selon une architecture modulaire :
 - **Matching** : Fonctionnalité de correspondance entre employés et postes basée sur les compétences.
 - **Rapports** : Génération de rapports et analyses.
 
+## Détails des Pages Principales
+
+### Page des Positions (PositionsPage)
+
+La page des positions permet de gérer les postes disponibles dans l'organisation. Elle offre les fonctionnalités suivantes :
+
+#### Fonctionnalités
+- **Affichage des postes** : Liste paginée des postes avec leurs informations principales
+- **Filtrage** : Recherche textuelle et filtrage par métier
+- **Ajout de poste** : Création d'un nouveau poste avec les informations requises
+- **Modification** : Mise à jour des informations d'un poste existant
+- **Suppression** : Suppression d'un poste après confirmation
+- **Gestion des compétences requises** : Accès à la gestion des compétences requises pour chaque poste
+- **Assignation d'employés** : Possibilité d'assigner un employé à un poste
+
+#### Structure des données
+Un poste est défini par les propriétés suivantes :
+- **Métier (job)** : Le métier associé au poste, qui détermine son titre et son niveau
+- **Localisation** : L'emplacement géographique du poste
+- **Description** : Description détaillée du poste (optionnelle)
+- **Statut** : État du poste (Actif/Inactif)
+
+#### Modifications récentes
+- **Suppression du champ salaire** : Le champ "salary_range" a été retiré de l'interface utilisateur pour simplifier la gestion des postes et respecter les politiques de confidentialité.
+- **Correction de l'affichage du titre** : Le titre du poste est maintenant correctement affiché en utilisant la propriété `job_title` qui est dérivée du métier associé.
+- **Amélioration de l'interface** : Les colonnes du tableau ont été réorganisées pour afficher "Poste" et "Niveau" au lieu de "Titre" et "Métier".
+- **Simplification du formulaire** : Le formulaire d'ajout/modification a été simplifié en supprimant le champ titre, puisque celui-ci est dérivé du métier sélectionné.
+
+#### Implémentation technique
+La page utilise les services suivants :
+- `positionService` : Pour les opérations CRUD sur les postes
+- `jobService` : Pour récupérer la liste des métiers disponibles
+
+Le composant gère l'état local pour :
+- La liste des postes et des métiers
+- La pagination et le filtrage
+- Les formulaires d'ajout/modification
+- Les dialogues de confirmation
+- Les notifications
+
+#### Intégration avec le backend
+La page communique avec les endpoints API suivants :
+- `GET /api/positions/` : Récupération de la liste des postes avec pagination et filtrage
+- `GET /api/jobs/` : Récupération de la liste des métiers
+- `POST /api/positions/` : Création d'un nouveau poste
+- `PUT /api/positions/{id}/` : Mise à jour d'un poste existant
+- `DELETE /api/positions/{id}/` : Suppression d'un poste
+
 ## Démarrage de l'Application
 
 Pour lancer l'application en mode développement :
@@ -93,18 +141,240 @@ Les fichiers de production seront générés dans le dossier `build/`.
 
 ## État Actuel du Développement
 
-Le frontend est actuellement à l'état initial d'une application React créée avec Create React App. Les principales fonctionnalités à développer sont :
+Le frontend est en cours de développement actif avec plusieurs fonctionnalités déjà implémentées :
 
-1. **Configuration des routes** : Mise en place de React Router pour la navigation.
-2. **Création des services API** : Implémentation des appels vers le backend Django.
-3. **Développement des composants UI** : Création des composants pour afficher et manipuler les données.
-4. **Intégration avec le backend** : Connexion avec l'API REST pour récupérer et modifier les données.
-5. **Authentification** : Mise en place du système d'authentification utilisateur.
+1. **Configuration des routes** : React Router est configuré pour la navigation entre les différentes pages.
+2. **Services API** : Les services pour communiquer avec le backend Django sont implémentés pour les principales entités (compétences, métiers, postes, départements, employés).
+3. **Composants UI** : Les composants pour afficher et manipuler les données sont développés avec Material-UI.
+4. **Intégration avec le backend** : La connexion avec l'API REST est fonctionnelle pour récupérer et modifier les données.
+5. **Authentification** : Le système d'authentification utilisateur basé sur JWT est en place.
+
+Les fonctionnalités suivantes ont été implémentées :
+- Gestion des compétences (ajout, modification, suppression)
+- Gestion des métiers et familles de métiers
+- Gestion des postes (avec les modifications récentes sur la suppression du champ salaire)
+- Gestion des départements
+- Gestion des employés et de leurs compétences
 
 ## Prochaines Étapes
 
-1. Créer la structure de base des dossiers (components, pages, etc.)
-2. Configurer React Router pour la navigation
-3. Implémenter les services API pour communiquer avec le backend
-4. Développer les composants UI pour les principales entités (employés, compétences, postes)
-5. Mettre en place l'authentification utilisateur 
+1. Améliorer la gestion des erreurs et la validation des formulaires
+2. Développer des visualisations graphiques pour les données (tableaux de bord)
+3. Implémenter la fonctionnalité de matching entre employés et postes
+4. Ajouter des fonctionnalités de reporting et d'export de données
+5. Optimiser les performances et l'expérience utilisateur 
+
+## Problèmes Connus et Solutions
+
+### Erreur dans l'affichage du nom de l'employé pour les positions
+
+**Problème** : Le backend générait des erreurs lors de la récupération des positions avec le message : `Error getting employee name: 'ForeignKey' object has no attribute 'id'`. Cette erreur se produisait dans la méthode `get_employee_name` du sérialiseur `PositionListSerializer`.
+
+**Cause** : La méthode tentait d'accéder à `obj.employee_id`, mais le champ `employee` est une ForeignKey et n'a pas directement un attribut `id`. De plus, la méthode tentait d'accéder à `obj.employee.first_name` et `obj.employee.last_name` directement, ce qui causait une erreur lorsque l'objet ForeignKey n'était pas correctement résolu.
+
+**Solution** : La méthode `get_employee_name` a été modifiée pour vérifier si l'attribut `employee` existe et n'est pas `None` avant d'essayer d'accéder à son ID. Ensuite, elle récupère l'instance de l'employé à partir de la base de données en utilisant cet ID.
+
+```python
+def get_employee_name(self, obj):
+    try:
+        if hasattr(obj, 'employee') and obj.employee is not None:
+            from jobs.models import Employee
+            employee = Employee.objects.get(id=obj.employee.id)
+            return f"{employee.first_name} {employee.last_name}"
+        return None
+    except Exception as e:
+        print(f"Error getting employee name: {e}")
+        return "Unknown Employee"
+```
+
+### Erreur dans la récupération des catégories de compétences
+
+**Problème** : Le frontend générait des erreurs lors de la récupération des catégories de compétences avec le message : `TypeError: response.data.map is not a function`.
+
+**Cause** : La méthode `getSkillCategories` dans le service `skillService` supposait que la réponse de l'API était un tableau d'objets de compétences, mais en réalité, il s'agissait d'un objet paginé avec une propriété `results` contenant les compétences.
+
+**Solution** : La méthode a été modifiée pour vérifier si la réponse est un objet paginé ou un tableau direct, et pour filtrer les catégories null ou undefined avant d'extraire les catégories uniques.
+
+```javascript
+getSkillCategories: async () => {
+  try {
+    const response = await api.get('/skills/');
+    
+    // Vérifier si la réponse est un objet paginé ou un tableau direct
+    const skills = Array.isArray(response.data) 
+      ? response.data 
+      : (response.data.results || []);
+    
+    // Filtrer les catégories null ou undefined et extraire les catégories uniques
+    const categories = [...new Set(skills
+      .filter(skill => skill && skill.category)
+      .map(skill => skill.category))];
+    
+    return categories;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des catégories de compétences:', error);
+    throw error;
+  }
+}
+```
+
+### Suppression du champ salaire dans la gestion des postes
+
+**Problème** : Le champ salaire (`salary_range`) était présent dans l'interface utilisateur pour les postes, mais il a été décidé de le supprimer pour des raisons de confidentialité et de simplification.
+
+**Solution** : Le champ a été supprimé du tableau d'affichage des postes et du formulaire d'ajout/modification. Les propriétés correspondantes ont également été supprimées de l'état du formulaire. 
+
+## Services API
+
+L'application utilise plusieurs services pour communiquer avec le backend. Ces services sont situés dans le dossier `src/services/` et suivent une structure similaire pour chaque entité.
+
+### Structure générale d'un service
+
+Chaque service est un objet JavaScript qui expose des méthodes pour effectuer des opérations CRUD sur une entité spécifique. Voici la structure générale :
+
+```javascript
+import api from './axiosConfig';
+
+const entityService = {
+  // Récupérer tous les éléments (avec pagination et filtrage)
+  getEntities: async (params = {}) => {
+    try {
+      const response = await api.get('/endpoint/', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des entités:', error);
+      throw error;
+    }
+  },
+  
+  // Récupérer un élément par son ID
+  getEntityById: async (id) => { /* ... */ },
+  
+  // Créer un nouvel élément
+  createEntity: async (entityData) => { /* ... */ },
+  
+  // Mettre à jour un élément existant
+  updateEntity: async (id, entityData) => { /* ... */ },
+  
+  // Supprimer un élément
+  deleteEntity: async (id) => { /* ... */ },
+  
+  // Méthodes spécifiques à l'entité...
+};
+
+export default entityService;
+```
+
+### Services implémentés
+
+Les services suivants ont été implémentés :
+
+#### authService
+Gère l'authentification des utilisateurs avec JWT.
+- `login(username, password)` : Authentifie un utilisateur et stocke les tokens
+- `logout()` : Déconnecte l'utilisateur en supprimant les tokens
+- `refreshToken()` : Rafraîchit le token d'accès
+- `getCurrentUser()` : Récupère les informations de l'utilisateur connecté
+
+#### skillService
+Gère les opérations sur les compétences.
+- Méthodes CRUD standard
+- `getSkillCategories()` : Récupère les catégories de compétences distinctes
+
+#### jobService
+Gère les opérations sur les métiers.
+- Méthodes CRUD standard
+- `getJobPositions(id)` : Récupère les positions associées à un métier
+- `getJobRequiredSkills(id)` : Récupère les compétences requises pour un métier
+- `getJobFamilies()` : Récupère toutes les familles de métiers
+
+#### positionService
+Gère les opérations sur les postes.
+- Méthodes CRUD standard
+- `getPositionRequiredSkills(id)` : Récupère les compétences requises pour un poste
+- `assignEmployee(positionId, employeeId)` : Assigne un employé à un poste
+- Méthodes pour gérer les compétences requises pour les positions
+
+#### departmentService
+Gère les opérations sur les départements.
+- Méthodes CRUD standard
+- `getDepartmentEmployees(id)` : Récupère les employés d'un département
+
+#### employeeService
+Gère les opérations sur les employés.
+- Méthodes CRUD standard
+- `getEmployeeSkills(id)` : Récupère les compétences d'un employé
+- Méthodes pour gérer les compétences des employés
+
+### Configuration Axios
+
+Le fichier `axiosConfig.js` configure l'instance Axios utilisée par tous les services. Il gère :
+- L'URL de base de l'API
+- Les en-têtes d'authentification
+- Les intercepteurs pour le rafraîchissement automatique des tokens
+- La gestion des erreurs 
+
+## Structure de la mise en page
+
+L'application utilise une structure de mise en page cohérente pour toutes les pages protégées (nécessitant une authentification).
+
+### MainLayout
+
+Le composant `MainLayout` est responsable de la structure globale de l'interface utilisateur. Il comprend :
+
+- **Navbar** : Barre de navigation supérieure toujours visible
+- **Sidebar** : Menu latéral pour la navigation entre les différentes sections
+- **Contenu principal** : Zone où le contenu spécifique à chaque page est affiché
+
+Le `MainLayout` est appliqué au niveau de l'application via un composant `ProtectedLayout` qui combine :
+- La vérification d'authentification (`ProtectedRoute`)
+- La mise en page commune (`MainLayout`)
+
+```jsx
+const ProtectedLayout = ({ children }) => {
+  return (
+    <ProtectedRoute>
+      <MainLayout>
+        {children}
+      </MainLayout>
+    </ProtectedRoute>
+  );
+};
+```
+
+Cette approche garantit que :
+1. Toutes les pages protégées nécessitent une authentification
+2. La navbar et le sidebar sont toujours présents sur toutes les pages protégées
+3. La navigation est cohérente dans toute l'application
+
+### Navbar
+
+La barre de navigation supérieure (`Navbar`) contient :
+- Un bouton pour basculer l'affichage du menu latéral
+- Le logo et le nom de l'application
+- Une barre de recherche centrale
+- Un menu utilisateur avec accès au profil, aux paramètres et à la déconnexion
+
+### Sidebar
+
+Le menu latéral (`Sidebar`) fournit une navigation entre les différentes sections de l'application :
+- Tableau de bord
+- Gestion des compétences
+- Gestion des métiers
+- Gestion des départements
+- Gestion des postes
+- Gestion des employés
+- Matching de compétences
+- Analyses et rapports
+
+Le menu peut être réduit ou développé pour s'adapter aux préférences de l'utilisateur et optimiser l'espace d'affichage.
+
+### Modifications récentes
+
+La structure de mise en page a été améliorée pour garantir que la navbar est toujours présente sur toutes les pages protégées. Les modifications incluent :
+
+1. Création d'un composant `ProtectedLayout` qui combine `ProtectedRoute` et `MainLayout`
+2. Application de ce composant à toutes les routes protégées dans `App.js`
+3. Suppression de l'enveloppement individuel avec `MainLayout` dans chaque composant de page
+
+Ces modifications assurent une expérience utilisateur cohérente avec une navigation toujours accessible, tout en simplifiant la structure du code et en évitant la duplication. 

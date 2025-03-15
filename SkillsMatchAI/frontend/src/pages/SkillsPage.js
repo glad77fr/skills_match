@@ -33,7 +33,6 @@ import {
   Delete as DeleteIcon,
   Search as SearchIcon
 } from '@mui/icons-material';
-import MainLayout from '../components/layout/MainLayout';
 import skillService from '../services/skillService';
 
 /**
@@ -273,217 +272,215 @@ const SkillsPage = () => {
   };
   
   return (
-    <MainLayout>
-      <Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h4" component="h1">
-            Gestion des compétences
-          </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={handleAddSkill}
-          >
-            Ajouter une compétence
-          </Button>
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" component="h1">
+          Gestion des compétences
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={handleAddSkill}
+        >
+          Ajouter une compétence
+        </Button>
+      </Box>
+      
+      {/* Filtres */}
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+          <TextField
+            label="Rechercher"
+            variant="outlined"
+            size="small"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            sx={{ flexGrow: 1, minWidth: 200 }}
+            InputProps={{
+              startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />,
+            }}
+          />
+          <FormControl size="small" sx={{ minWidth: 200 }}>
+            <InputLabel id="category-filter-label">Catégorie</InputLabel>
+            <Select
+              labelId="category-filter-label"
+              id="category-filter"
+              value={categoryFilter}
+              label="Catégorie"
+              onChange={(e) => setCategoryFilter(e.target.value)}
+            >
+              <MenuItem value="">Toutes les catégories</MenuItem>
+              {categories.map((category) => (
+                <MenuItem key={category} value={category}>
+                  {category}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Box>
-        
-        {/* Filtres */}
-        <Paper sx={{ p: 2, mb: 3 }}>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+      </Paper>
+      
+      {/* Tableau des compétences */}
+      <Paper>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Nom</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell>Catégorie</TableCell>
+                <TableCell align="right">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={4} align="center" sx={{ py: 3 }}>
+                    <CircularProgress />
+                  </TableCell>
+                </TableRow>
+              ) : skills.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} align="center" sx={{ py: 3 }}>
+                    Aucune compétence trouvée
+                  </TableCell>
+                </TableRow>
+              ) : (
+                skills.map((skill) => (
+                  <TableRow key={skill.id}>
+                    <TableCell>{skill.name}</TableCell>
+                    <TableCell>{skill.description}</TableCell>
+                    <TableCell>
+                      <Chip label={skill.category} size="small" />
+                    </TableCell>
+                    <TableCell align="right">
+                      <Tooltip title="Modifier">
+                        <IconButton
+                          color="primary"
+                          onClick={() => handleEditSkill(skill)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Supprimer">
+                        <IconButton
+                          color="error"
+                          onClick={() => handleDeleteSkill(skill.id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={totalCount}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          labelRowsPerPage="Lignes par page:"
+          labelDisplayedRows={({ from, to, count }) => `${from}-${to} sur ${count}`}
+        />
+      </Paper>
+      
+      {/* Formulaire d'ajout/édition */}
+      <Dialog open={openForm} onClose={handleCloseForm} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {formMode === 'add' ? 'Ajouter une compétence' : 'Modifier la compétence'}
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TextField
-              label="Rechercher"
+              autoFocus
+              margin="dense"
+              id="name"
+              name="name"
+              label="Nom de la compétence"
+              type="text"
+              fullWidth
               variant="outlined"
-              size="small"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              sx={{ flexGrow: 1, minWidth: 200 }}
-              InputProps={{
-                startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />,
-              }}
+              value={currentSkill.name}
+              onChange={handleFormChange}
+              error={!!formErrors.name}
+              helperText={formErrors.name}
             />
-            <FormControl size="small" sx={{ minWidth: 200 }}>
-              <InputLabel id="category-filter-label">Catégorie</InputLabel>
+            <TextField
+              margin="dense"
+              id="description"
+              name="description"
+              label="Description"
+              type="text"
+              fullWidth
+              variant="outlined"
+              multiline
+              rows={3}
+              value={currentSkill.description}
+              onChange={handleFormChange}
+            />
+            <FormControl fullWidth error={!!formErrors.category}>
+              <InputLabel id="category-label">Catégorie</InputLabel>
               <Select
-                labelId="category-filter-label"
-                id="category-filter"
-                value={categoryFilter}
+                labelId="category-label"
+                id="category"
+                name="category"
+                value={currentSkill.category}
                 label="Catégorie"
-                onChange={(e) => setCategoryFilter(e.target.value)}
+                onChange={handleFormChange}
               >
-                <MenuItem value="">Toutes les catégories</MenuItem>
                 {categories.map((category) => (
                   <MenuItem key={category} value={category}>
                     {category}
                   </MenuItem>
                 ))}
               </Select>
+              {formErrors.category && (
+                <Typography variant="caption" color="error">
+                  {formErrors.category}
+                </Typography>
+              )}
             </FormControl>
           </Box>
-        </Paper>
-        
-        {/* Tableau des compétences */}
-        <Paper>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Nom</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell>Catégorie</TableCell>
-                  <TableCell align="right">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={4} align="center" sx={{ py: 3 }}>
-                      <CircularProgress />
-                    </TableCell>
-                  </TableRow>
-                ) : skills.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} align="center" sx={{ py: 3 }}>
-                      Aucune compétence trouvée
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  skills.map((skill) => (
-                    <TableRow key={skill.id}>
-                      <TableCell>{skill.name}</TableCell>
-                      <TableCell>{skill.description}</TableCell>
-                      <TableCell>
-                        <Chip label={skill.category} size="small" />
-                      </TableCell>
-                      <TableCell align="right">
-                        <Tooltip title="Modifier">
-                          <IconButton
-                            color="primary"
-                            onClick={() => handleEditSkill(skill)}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Supprimer">
-                          <IconButton
-                            color="error"
-                            onClick={() => handleDeleteSkill(skill.id)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={totalCount}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            labelRowsPerPage="Lignes par page:"
-            labelDisplayedRows={({ from, to, count }) => `${from}-${to} sur ${count}`}
-          />
-        </Paper>
-        
-        {/* Formulaire d'ajout/édition */}
-        <Dialog open={openForm} onClose={handleCloseForm} maxWidth="sm" fullWidth>
-          <DialogTitle>
-            {formMode === 'add' ? 'Ajouter une compétence' : 'Modifier la compétence'}
-          </DialogTitle>
-          <DialogContent>
-            <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <TextField
-                autoFocus
-                margin="dense"
-                id="name"
-                name="name"
-                label="Nom de la compétence"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={currentSkill.name}
-                onChange={handleFormChange}
-                error={!!formErrors.name}
-                helperText={formErrors.name}
-              />
-              <TextField
-                margin="dense"
-                id="description"
-                name="description"
-                label="Description"
-                type="text"
-                fullWidth
-                variant="outlined"
-                multiline
-                rows={3}
-                value={currentSkill.description}
-                onChange={handleFormChange}
-              />
-              <FormControl fullWidth error={!!formErrors.category}>
-                <InputLabel id="category-label">Catégorie</InputLabel>
-                <Select
-                  labelId="category-label"
-                  id="category"
-                  name="category"
-                  value={currentSkill.category}
-                  label="Catégorie"
-                  onChange={handleFormChange}
-                >
-                  {categories.map((category) => (
-                    <MenuItem key={category} value={category}>
-                      {category}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {formErrors.category && (
-                  <Typography variant="caption" color="error">
-                    {formErrors.category}
-                  </Typography>
-                )}
-              </FormControl>
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseForm} disabled={submitting}>
-              Annuler
-            </Button>
-            <Button
-              onClick={handleSubmitForm}
-              variant="contained"
-              color="primary"
-              disabled={submitting}
-              startIcon={submitting && <CircularProgress size={20} />}
-            >
-              {formMode === 'add' ? 'Ajouter' : 'Enregistrer'}
-            </Button>
-          </DialogActions>
-        </Dialog>
-        
-        {/* Notification */}
-        <Snackbar
-          open={notification.open}
-          autoHideDuration={6000}
-          onClose={handleCloseNotification}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        >
-          <Alert
-            onClose={handleCloseNotification}
-            severity={notification.severity}
-            sx={{ width: '100%' }}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseForm} disabled={submitting}>
+            Annuler
+          </Button>
+          <Button
+            onClick={handleSubmitForm}
+            variant="contained"
+            color="primary"
+            disabled={submitting}
+            startIcon={submitting && <CircularProgress size={20} />}
           >
-            {notification.message}
-          </Alert>
-        </Snackbar>
-      </Box>
-    </MainLayout>
+            {formMode === 'add' ? 'Ajouter' : 'Enregistrer'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      
+      {/* Notification */}
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={6000}
+        onClose={handleCloseNotification}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={handleCloseNotification}
+          severity={notification.severity}
+          sx={{ width: '100%' }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 };
 

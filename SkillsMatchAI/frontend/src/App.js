@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import LoginForm from './components/auth/LoginForm';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import MainLayout from './components/layout/MainLayout';
 import Dashboard from './pages/Dashboard';
 import SkillsPage from './pages/SkillsPage';
 import JobsPage from './pages/JobsPage';
@@ -15,6 +16,22 @@ import GapAnalysisPage from './pages/GapAnalysisPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
 import './App.css';
+
+/**
+ * Composant qui combine ProtectedRoute et MainLayout
+ * @param {Object} props - Propriétés du composant
+ * @param {React.ReactNode} props.children - Contenu à afficher
+ * @returns {JSX.Element} - Composant combiné
+ */
+const ProtectedLayout = ({ children }) => {
+  return (
+    <ProtectedRoute>
+      <MainLayout>
+        {children}
+      </MainLayout>
+    </ProtectedRoute>
+  );
+};
 
 /**
  * Composant principal de l'application
@@ -32,9 +49,9 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <Dashboard />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           
@@ -42,36 +59,36 @@ function App() {
           <Route
             path="/skills"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <SkillsPage />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           
           <Route
             path="/jobs"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <JobsPage />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           
           <Route
             path="/departments"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <DepartmentsPage />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           
           <Route
             path="/positions"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <PositionsPage />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           
@@ -79,18 +96,18 @@ function App() {
           <Route
             path="/employees"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <EmployeesPage />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           
           <Route
             path="/skill-matching"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <SkillMatchingPage />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           
@@ -98,18 +115,18 @@ function App() {
           <Route
             path="/skill-analytics"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <SkillAnalyticsPage />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           
           <Route
             path="/gap-analysis"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <GapAnalysisPage />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           
@@ -117,18 +134,18 @@ function App() {
           <Route
             path="/profile"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <ProfilePage />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           
           <Route
             path="/settings"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <SettingsPage />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           

@@ -23,7 +23,6 @@ import {
   Assignment as AssignmentIcon
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
-import MainLayout from '../components/layout/MainLayout';
 
 /**
  * Page du tableau de bord
@@ -111,198 +110,145 @@ const Dashboard = () => {
   );
   
   return (
-    <MainLayout>
-      <Box>
-        <Typography variant="h4" gutterBottom>
-          Tableau de bord
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary" paragraph>
-          Bienvenue, {user?.username || 'Utilisateur'} ! Voici un aperçu de votre système de gestion des compétences.
-        </Typography>
-        
-        {/* Statistiques */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Employés" 
-              count={stats.employees.count} 
-              icon={<PersonIcon fontSize="large" />} 
-              loading={stats.employees.loading}
-              color="primary"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Compétences" 
-              count={stats.skills.count} 
-              icon={<PsychologyIcon fontSize="large" />} 
-              loading={stats.skills.loading}
-              color="secondary"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Emplois" 
-              count={stats.jobs.count} 
-              icon={<WorkIcon fontSize="large" />} 
-              loading={stats.jobs.loading}
-              color="success"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Départements" 
-              count={stats.departments.count} 
-              icon={<BusinessIcon fontSize="large" />} 
-              loading={stats.departments.loading}
-              color="warning"
-            />
-          </Grid>
+    <Box>
+      <Typography variant="h4" gutterBottom>
+        Tableau de bord
+      </Typography>
+      <Typography variant="subtitle1" color="text.secondary" paragraph>
+        Bienvenue, {user?.username || 'Utilisateur'} ! Voici un aperçu de votre système de gestion des compétences.
+      </Typography>
+      
+      {/* Statistiques */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard 
+            title="Employés" 
+            count={stats.employees.count} 
+            icon={<PersonIcon fontSize="large" />} 
+            loading={stats.employees.loading}
+            color="primary"
+          />
         </Grid>
-        
-        {/* Contenu principal */}
-        <Grid container spacing={3}>
-          {/* Compétences récentes */}
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CardHeader 
-                title="Compétences récentes" 
-                action={
-                  <Button 
-                    size="small" 
-                    color="primary"
-                    onClick={() => window.location.href = '/skills'}
-                  >
-                    Voir tout
-                  </Button>
-                }
-              />
-              <Divider />
-              <CardContent>
-                {recentItems.loading ? (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
-                    <CircularProgress />
-                  </Box>
-                ) : (
-                  <List>
-                    {recentItems.skills.map((skill) => (
-                      <React.Fragment key={skill.id}>
-                        <ListItem>
-                          <ListItemIcon>
-                            <PsychologyIcon />
-                          </ListItemIcon>
-                          <ListItemText 
-                            primary={skill.name} 
-                            secondary={`Catégorie: ${skill.category}`} 
-                          />
-                        </ListItem>
-                        <Divider variant="inset" component="li" />
-                      </React.Fragment>
-                    ))}
-                  </List>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-          
-          {/* Actions rapides */}
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CardHeader title="Actions rapides" />
-              <Divider />
-              <CardContent>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <Button 
-                      variant="outlined" 
-                      fullWidth 
-                      startIcon={<PersonIcon />}
-                      onClick={() => window.location.href = '/employees/new'}
-                      sx={{ justifyContent: 'flex-start', py: 1 }}
-                    >
-                      Ajouter un employé
-                    </Button>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Button 
-                      variant="outlined" 
-                      fullWidth 
-                      startIcon={<PsychologyIcon />}
-                      onClick={() => window.location.href = '/skills/new'}
-                      sx={{ justifyContent: 'flex-start', py: 1 }}
-                    >
-                      Ajouter une compétence
-                    </Button>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Button 
-                      variant="outlined" 
-                      fullWidth 
-                      startIcon={<WorkIcon />}
-                      onClick={() => window.location.href = '/jobs/new'}
-                      sx={{ justifyContent: 'flex-start', py: 1 }}
-                    >
-                      Ajouter un emploi
-                    </Button>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Button 
-                      variant="outlined" 
-                      fullWidth 
-                      startIcon={<AssignmentIcon />}
-                      onClick={() => window.location.href = '/skill-matching'}
-                      sx={{ justifyContent: 'flex-start', py: 1 }}
-                    >
-                      Matching de compétences
-                    </Button>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-            
-            {/* Tendances */}
-            <Card sx={{ mt: 3 }}>
-              <CardHeader 
-                title="Tendances des compétences" 
-                action={
-                  <Button 
-                    size="small" 
-                    color="primary"
-                    onClick={() => window.location.href = '/skill-analytics'}
-                  >
-                    Voir les analyses
-                  </Button>
-                }
-              />
-              <Divider />
-              <CardContent>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard 
+            title="Compétences" 
+            count={stats.skills.count} 
+            icon={<PsychologyIcon fontSize="large" />} 
+            loading={stats.skills.loading}
+            color="secondary"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard 
+            title="Emplois" 
+            count={stats.jobs.count} 
+            icon={<WorkIcon fontSize="large" />} 
+            loading={stats.jobs.loading}
+            color="success"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard 
+            title="Départements" 
+            count={stats.departments.count} 
+            icon={<BusinessIcon fontSize="large" />} 
+            loading={stats.departments.loading}
+            color="warning"
+          />
+        </Grid>
+      </Grid>
+      
+      {/* Contenu principal */}
+      <Grid container spacing={3}>
+        {/* Compétences récentes */}
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardHeader 
+              title="Compétences récentes" 
+              action={
+                <Button 
+                  size="small" 
+                  color="primary"
+                  onClick={() => window.location.href = '/skills'}
+                >
+                  Voir tout
+                </Button>
+              }
+            />
+            <Divider />
+            <CardContent>
+              {recentItems.loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
+                  <CircularProgress />
+                </Box>
+              ) : (
                 <List>
-                  <ListItem>
-                    <ListItemIcon>
-                      <TrendingUpIcon color="success" />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary="Intelligence Artificielle" 
-                      secondary="Augmentation de 25% ce trimestre" 
-                    />
-                  </ListItem>
-                  <Divider variant="inset" component="li" />
-                  <ListItem>
-                    <ListItemIcon>
-                      <TrendingUpIcon color="success" />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary="Cloud Computing" 
-                      secondary="Augmentation de 18% ce trimestre" 
-                    />
-                  </ListItem>
+                  {recentItems.skills.map((skill) => (
+                    <React.Fragment key={skill.id}>
+                      <ListItem>
+                        <ListItemIcon>
+                          <PsychologyIcon />
+                        </ListItemIcon>
+                        <ListItemText 
+                          primary={skill.name} 
+                          secondary={`Catégorie: ${skill.category}`} 
+                        />
+                      </ListItem>
+                      <Divider variant="inset" component="li" />
+                    </React.Fragment>
+                  ))}
                 </List>
-              </CardContent>
-            </Card>
-          </Grid>
+              )}
+            </CardContent>
+          </Card>
         </Grid>
-      </Box>
-    </MainLayout>
+        
+        {/* Actions rapides */}
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardHeader title="Actions rapides" />
+            <Divider />
+            <CardContent>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <Button 
+                    variant="outlined" 
+                    fullWidth 
+                    startIcon={<PersonIcon />}
+                    onClick={() => window.location.href = '/employees/new'}
+                    sx={{ justifyContent: 'flex-start', py: 1 }}
+                  >
+                    Ajouter un employé
+                  </Button>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Button 
+                    variant="outlined" 
+                    fullWidth 
+                    startIcon={<PsychologyIcon />}
+                    onClick={() => window.location.href = '/skills/new'}
+                    sx={{ justifyContent: 'flex-start', py: 1 }}
+                  >
+                    Ajouter une compétence
+                  </Button>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Button 
+                    variant="outlined" 
+                    fullWidth 
+                    startIcon={<WorkIcon />}
+                    onClick={() => window.location.href = '/jobs/new'}
+                    sx={{ justifyContent: 'flex-start', py: 1 }}
+                  >
+                    Ajouter un emploi
+                  </Button>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 
