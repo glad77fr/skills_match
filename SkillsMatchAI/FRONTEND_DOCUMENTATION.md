@@ -367,7 +367,12 @@ Le menu latéral (`Sidebar`) fournit une navigation entre les différentes secti
 - Matching de compétences
 - Analyses et rapports
 
-Le menu peut être réduit ou développé pour s'adapter aux préférences de l'utilisateur et optimiser l'espace d'affichage.
+Le menu peut être réduit ou développé pour s'adapter aux préférences de l'utilisateur et optimiser l'espace d'affichage. L'utilisateur peut :
+- Fermer complètement la sidebar en cliquant sur l'icône de menu dans la navbar
+- Rouvrir la sidebar en cliquant à nouveau sur l'icône de menu
+- Réduire/développer les sections individuelles (Référentiels, Gestion, Analytique) en cliquant sur leurs en-têtes
+
+Lorsque la sidebar est fermée, elle se déplace hors de l'écran (transformation CSS) sans occuper d'espace, permettant au contenu principal d'occuper toute la largeur disponible. La sidebar utilise un positionnement fixe qui lui permet de rester accessible sans affecter la mise en page du contenu principal. Sur les appareils mobiles, la sidebar est automatiquement fermée au chargement pour optimiser l'espace d'affichage.
 
 ### Modifications récentes
 
@@ -376,5 +381,14 @@ La structure de mise en page a été améliorée pour garantir que la navbar est
 1. Création d'un composant `ProtectedLayout` qui combine `ProtectedRoute` et `MainLayout`
 2. Application de ce composant à toutes les routes protégées dans `App.js`
 3. Suppression de l'enveloppement individuel avec `MainLayout` dans chaque composant de page
+4. Amélioration de la sidebar pour permettre de la fermer complètement, libérant ainsi plus d'espace pour le contenu principal
+5. Ajout de transitions fluides lors de l'ouverture et de la fermeture de la sidebar
+6. Optimisation de l'espace entre la sidebar et le contenu principal pour une meilleure utilisation de l'espace écran
+7. Réduction des marges et paddings excessifs dans l'interface pour une présentation plus compacte et efficace
+8. Amélioration du comportement responsive pour que le contenu principal occupe l'intégralité de la page lorsque la sidebar est fermée
+9. Détection automatique des appareils mobiles pour fermer la sidebar par défaut sur les petits écrans
+10. Utilisation de transformations CSS pour déplacer la sidebar hors de l'écran lorsqu'elle est fermée
+11. Implémentation d'un positionnement fixe pour la sidebar, permettant au contenu principal d'occuper toute la largeur disponible sans espace latéral inutile
+12. Optimisation des transitions pour garantir une expérience utilisateur fluide lors de l'ouverture et de la fermeture de la sidebar
 
-Ces modifications assurent une expérience utilisateur cohérente avec une navigation toujours accessible, tout en simplifiant la structure du code et en évitant la duplication. 
+Ces modifications assurent une expérience utilisateur cohérente avec une navigation toujours accessible, tout en simplifiant la structure du code et en évitant la duplication. La possibilité de fermer la sidebar et l'optimisation de l'espace offrent également une meilleure utilisation de l'espace écran, particulièrement utile pour visualiser des tableaux de données volumineux. 

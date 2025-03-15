@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Box, Toolbar, CssBaseline } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Toolbar, CssBaseline, useMediaQuery, useTheme } from '@mui/material';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 
@@ -10,7 +10,17 @@ import Sidebar from './Sidebar';
  * @returns {JSX.Element} - Composant de mise en page principale
  */
 const MainLayout = ({ children }) => {
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [drawerOpen, setDrawerOpen] = useState(!isMobile);
+  const drawerWidth = 240;
+  
+  // Fermer automatiquement le drawer sur mobile lors du chargement initial
+  useEffect(() => {
+    if (isMobile) {
+      setDrawerOpen(false);
+    }
+  }, [isMobile]);
   
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
@@ -31,9 +41,13 @@ const MainLayout = ({ children }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
-          width: { sm: `calc(100% - ${drawerOpen ? 240 : 0}px)` },
-          ml: { sm: drawerOpen ? 0 : -240 },
+          p: 2,
+          width: '100%',
+          marginLeft: {
+            xs: 0,
+            sm: 0
+          },
+          ml: drawerOpen ? { xs: 0, sm: `${drawerWidth}px` } : 0,
           transition: theme => theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,

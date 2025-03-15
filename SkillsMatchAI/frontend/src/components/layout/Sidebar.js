@@ -66,20 +66,28 @@ const Sidebar = ({ open, onClose }) => {
   
   return (
     <Drawer
-      variant="permanent"
+      variant="persistent"
+      open={open}
       sx={{
         width: drawerWidth,
         flexShrink: 0,
-        [`& .MuiDrawer-paper`]: {
+        position: 'fixed',
+        '& .MuiDrawer-paper': {
           width: drawerWidth,
           boxSizing: 'border-box',
+          position: 'fixed',
+          transition: theme => theme.transitions.create(['transform'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
+          transform: open ? 'translateX(0)' : 'translateX(-100%)',
+          zIndex: theme => theme.zIndex.drawer,
         },
       }}
-      open={open}
     >
       <Toolbar />
-      <Box sx={{ overflow: 'auto', mt: 2 }}>
-        <List>
+      <Box sx={{ overflow: 'auto', mt: 1, pr: 1 }}>
+        <List dense>
           <ListItem disablePadding>
             <ListItemButton
               selected={isActive('/dashboard')}
@@ -93,10 +101,10 @@ const Sidebar = ({ open, onClose }) => {
           </ListItem>
         </List>
         
-        <Divider sx={{ my: 1 }} />
+        <Divider sx={{ my: 0.5 }} />
         
         {/* Référentiels */}
-        <List>
+        <List dense>
           <ListItem disablePadding>
             <ListItemButton onClick={() => handleMenuToggle('referentials')}>
               <ListItemIcon>
@@ -108,9 +116,9 @@ const Sidebar = ({ open, onClose }) => {
           </ListItem>
           
           <Collapse in={openMenus.referentials} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
+            <List component="div" disablePadding dense>
               <ListItemButton
-                sx={{ pl: 4 }}
+                sx={{ pl: 3 }}
                 selected={isActive('/skills')}
                 onClick={() => handleNavigation('/skills')}
               >
@@ -121,7 +129,7 @@ const Sidebar = ({ open, onClose }) => {
               </ListItemButton>
               
               <ListItemButton
-                sx={{ pl: 4 }}
+                sx={{ pl: 3 }}
                 selected={isActive('/jobs')}
                 onClick={() => handleNavigation('/jobs')}
               >
@@ -132,7 +140,7 @@ const Sidebar = ({ open, onClose }) => {
               </ListItemButton>
               
               <ListItemButton
-                sx={{ pl: 4 }}
+                sx={{ pl: 3 }}
                 selected={isActive('/departments')}
                 onClick={() => handleNavigation('/departments')}
               >
@@ -143,7 +151,7 @@ const Sidebar = ({ open, onClose }) => {
               </ListItemButton>
               
               <ListItemButton
-                sx={{ pl: 4 }}
+                sx={{ pl: 3 }}
                 selected={isActive('/positions')}
                 onClick={() => handleNavigation('/positions')}
               >
@@ -156,10 +164,10 @@ const Sidebar = ({ open, onClose }) => {
           </Collapse>
         </List>
         
-        <Divider sx={{ my: 1 }} />
+        <Divider sx={{ my: 0.5 }} />
         
         {/* Gestion */}
-        <List>
+        <List dense>
           <ListItem disablePadding>
             <ListItemButton onClick={() => handleMenuToggle('management')}>
               <ListItemIcon>
@@ -171,9 +179,9 @@ const Sidebar = ({ open, onClose }) => {
           </ListItem>
           
           <Collapse in={openMenus.management} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
+            <List component="div" disablePadding dense>
               <ListItemButton
-                sx={{ pl: 4 }}
+                sx={{ pl: 3 }}
                 selected={isActive('/employees')}
                 onClick={() => handleNavigation('/employees')}
               >
@@ -184,7 +192,7 @@ const Sidebar = ({ open, onClose }) => {
               </ListItemButton>
               
               <ListItemButton
-                sx={{ pl: 4 }}
+                sx={{ pl: 3 }}
                 selected={isActive('/skill-matching')}
                 onClick={() => handleNavigation('/skill-matching')}
               >
@@ -197,10 +205,10 @@ const Sidebar = ({ open, onClose }) => {
           </Collapse>
         </List>
         
-        <Divider sx={{ my: 1 }} />
+        <Divider sx={{ my: 0.5 }} />
         
         {/* Analytique */}
-        <List>
+        <List dense>
           <ListItem disablePadding>
             <ListItemButton onClick={() => handleMenuToggle('analytics')}>
               <ListItemIcon>
@@ -212,9 +220,9 @@ const Sidebar = ({ open, onClose }) => {
           </ListItem>
           
           <Collapse in={openMenus.analytics} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
+            <List component="div" disablePadding dense>
               <ListItemButton
-                sx={{ pl: 4 }}
+                sx={{ pl: 3 }}
                 selected={isActive('/skill-analytics')}
                 onClick={() => handleNavigation('/skill-analytics')}
               >
@@ -225,7 +233,7 @@ const Sidebar = ({ open, onClose }) => {
               </ListItemButton>
               
               <ListItemButton
-                sx={{ pl: 4 }}
+                sx={{ pl: 3 }}
                 selected={isActive('/gap-analysis')}
                 onClick={() => handleNavigation('/gap-analysis')}
               >
@@ -238,9 +246,9 @@ const Sidebar = ({ open, onClose }) => {
           </Collapse>
         </List>
         
-        <Divider sx={{ my: 1 }} />
+        <Divider sx={{ my: 0.5 }} />
         
-        <List>
+        <List dense>
           <ListItem disablePadding>
             <ListItemButton
               selected={isActive('/settings')}
