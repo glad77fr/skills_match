@@ -10,10 +10,10 @@ const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
-  // Ajouter des options pour CORS
-  withCredentials: false,
-  timeout: 10000, // Timeout de 10 secondes
+  withCredentials: false, // Désactiver l'envoi des cookies
+  timeout: 5000, // Réduire le timeout à 5 secondes
 });
 
 /**

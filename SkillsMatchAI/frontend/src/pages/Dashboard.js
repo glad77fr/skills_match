@@ -17,10 +17,8 @@ import {
 import {
   Person as PersonIcon,
   Work as WorkIcon,
-  Business as BusinessIcon,
   Psychology as PsychologyIcon,
-  TrendingUp as TrendingUpIcon,
-  Assignment as AssignmentIcon
+  LocationOn as PositionIcon
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 
@@ -34,7 +32,7 @@ const Dashboard = () => {
     employees: { count: 0, loading: true },
     skills: { count: 0, loading: true },
     jobs: { count: 0, loading: true },
-    departments: { count: 0, loading: true }
+    positions: { count: 0, loading: true },
   });
   const [recentItems, setRecentItems] = useState({
     skills: [],
@@ -48,12 +46,12 @@ const Dashboard = () => {
         // Dans une application réelle, ces données viendraient de l'API
         setTimeout(() => {
           setStats({
-            employees: { count: 125, loading: false },
-            skills: { count: 87, loading: false },
-            jobs: { count: 42, loading: false },
-            departments: { count: 8, loading: false }
+            employees: { count: 24, loading: false },
+            skills: { count: 45, loading: false },
+            jobs: { count: 12, loading: false },
+            positions: { count: 18, loading: false },
           });
-        }, 1000);
+        }, 1500);
         
         // Simuler le chargement des éléments récents
         setTimeout(() => {
@@ -119,44 +117,45 @@ const Dashboard = () => {
       </Typography>
       
       {/* Statistiques */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard 
-            title="Employés" 
-            count={stats.employees.count} 
-            icon={<PersonIcon fontSize="large" />} 
-            loading={stats.employees.loading}
-            color="primary"
-          />
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h5" gutterBottom>
+          Statistiques
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              title="Employés"
+              count={stats.employees.count}
+              icon={<PersonIcon fontSize="large" />}
+              loading={stats.employees.loading}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              title="Compétences"
+              count={stats.skills.count}
+              icon={<PsychologyIcon fontSize="large" />}
+              loading={stats.skills.loading}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              title="Emplois"
+              count={stats.jobs.count}
+              icon={<WorkIcon fontSize="large" />}
+              loading={stats.jobs.loading}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              title="Postes"
+              count={stats.positions.count}
+              icon={<PositionIcon fontSize="large" />}
+              loading={stats.positions.loading}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard 
-            title="Compétences" 
-            count={stats.skills.count} 
-            icon={<PsychologyIcon fontSize="large" />} 
-            loading={stats.skills.loading}
-            color="secondary"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard 
-            title="Emplois" 
-            count={stats.jobs.count} 
-            icon={<WorkIcon fontSize="large" />} 
-            loading={stats.jobs.loading}
-            color="success"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard 
-            title="Départements" 
-            count={stats.departments.count} 
-            icon={<BusinessIcon fontSize="large" />} 
-            loading={stats.departments.loading}
-            color="warning"
-          />
-        </Grid>
-      </Grid>
+      </Box>
       
       {/* Contenu principal */}
       <Grid container spacing={3}>

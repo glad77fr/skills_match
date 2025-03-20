@@ -19,6 +19,7 @@ const LoginForm = () => {
   // Redirige vers le tableau de bord si déjà authentifié
   React.useEffect(() => {
     if (authenticated) {
+      console.log('Utilisateur déjà authentifié, redirection vers /dashboard');
       navigate('/dashboard');
     }
   }, [authenticated, navigate]);
@@ -38,16 +39,14 @@ const LoginForm = () => {
     }
     
     try {
+      console.log('Tentative de connexion avec:', username);
       setLoading(true);
-      await login(username, password);
+      const result = await login(username, password);
+      console.log('Connexion réussie, résultat:', result);
       navigate('/dashboard');
     } catch (error) {
-      console.error('Erreur de connexion:', error);
-      if (error.response && error.response.status === 401) {
-        setError('Nom d\'utilisateur ou mot de passe incorrect');
-      } else {
-        setError('Une erreur est survenue lors de la connexion');
-      }
+      console.error('Erreur de connexion détaillée:', error);
+      setError(error.message || 'Une erreur est survenue lors de la connexion');
     } finally {
       setLoading(false);
     }

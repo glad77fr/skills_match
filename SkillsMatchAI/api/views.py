@@ -6,12 +6,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, Q
 
 from jobs.models import (
-    JobFamily, Skill, Job, Department, Position, 
+    JobFamily, Skill, Job, Position, 
     Employee, EmployeeSkill, PositionSkill
 )
 from .serializers import (
     JobFamilySerializer, SkillSerializer, JobSerializer, JobDetailSerializer,
-    DepartmentSerializer, PositionListSerializer, PositionDetailSerializer,
+    PositionListSerializer, PositionDetailSerializer,
     EmployeeListSerializer, EmployeeDetailSerializer, EmployeeSkillSerializer,
     PositionSkillSerializer, UserSerializer
 )
@@ -83,24 +83,6 @@ class JobViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class DepartmentViewSet(viewsets.ModelViewSet):
-    """API endpoint pour les départements."""
-    queryset = Department.objects.all()
-    serializer_class = DepartmentSerializer
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['name', 'description']
-    ordering_fields = ['name']
-    ordering = ['name']
-    
-    @action(detail=True, methods=['get'])
-    def employees(self, request, pk=None):
-        """Récupère tous les employés d'un département spécifique."""
-        department = self.get_object()
-        employees = Employee.objects.filter(department=department)
-        serializer = EmployeeListSerializer(employees, many=True)
-        return Response(serializer.data)
-
-
 class PositionViewSet(viewsets.ModelViewSet):
     """API endpoint pour les positions."""
     queryset = Position.objects.all()
@@ -153,7 +135,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     """API endpoint pour les employés."""
     queryset = Employee.objects.all()
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['employment_status', 'department']
+    filterset_fields = ['employment_status']
     search_fields = ['first_name', 'last_name', 'email']
     ordering_fields = ['last_name', 'first_name', 'hire_date']
     ordering = ['last_name', 'first_name']

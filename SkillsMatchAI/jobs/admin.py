@@ -3,7 +3,6 @@ from .models import (
     JobFamily, 
     Skill, 
     Job, 
-    Department, 
     Position, 
     Employee, 
     EmployeeSkill,
@@ -42,13 +41,6 @@ class JobAdmin(admin.ModelAdmin):
     exclude = ('required_skills',)  # Exclus car géré par l'inline
     ordering = ('title',)
 
-@admin.register(Department)
-class DepartmentAdmin(admin.ModelAdmin):
-    """Interface d'administration pour le modèle Department."""
-    list_display = ('name', 'description')
-    search_fields = ('name', 'description')
-    ordering = ('name',)
-
 class PositionSkillInline(admin.TabularInline):
     """Affichage en ligne des compétences requises pour une Position."""
     model = PositionSkill
@@ -81,8 +73,8 @@ class EmployeeSkillInline(admin.TabularInline):
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
     """Interface d'administration pour le modèle Employee."""
-    list_display = ('last_name', 'first_name', 'email', 'department', 'employment_status', 'hire_date')
-    list_filter = ('employment_status', 'department', 'hire_date')
+    list_display = ('last_name', 'first_name', 'email', 'employment_status', 'hire_date')
+    list_filter = ('employment_status', 'hire_date')
     search_fields = ('last_name', 'first_name', 'email')
     inlines = [EmployeeSkillInline]
     date_hierarchy = 'hire_date'
@@ -91,7 +83,7 @@ class EmployeeAdmin(admin.ModelAdmin):
             'fields': ('first_name', 'last_name', 'date_of_birth', 'email', 'phone_number')
         }),
         ('Informations professionnelles', {
-            'fields': ('hire_date', 'department', 'current_position', 'employment_status')
+            'fields': ('hire_date', 'current_position', 'employment_status')
         }),
         ('Documents et médias', {
             'fields': ('profile_picture', 'resume'),

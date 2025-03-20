@@ -1,20 +1,18 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import LoginForm from './components/auth/LoginForm';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import MainLayout from './components/layout/MainLayout';
 import Dashboard from './pages/Dashboard';
 import SkillsPage from './pages/SkillsPage';
 import JobsPage from './pages/JobsPage';
-import DepartmentsPage from './pages/DepartmentsPage';
 import PositionsPage from './pages/PositionsPage';
 import EmployeesPage from './pages/EmployeesPage';
 import SkillMatchingPage from './pages/SkillMatchingPage';
 import SkillAnalyticsPage from './pages/SkillAnalyticsPage';
 import GapAnalysisPage from './pages/GapAnalysisPage';
-import ProfilePage from './pages/ProfilePage';
-import SettingsPage from './pages/SettingsPage';
+import LoginPage from './pages/Login';
+import UserSettingsPage from './pages/UserSettingsPage';
 import './App.css';
 
 /**
@@ -42,10 +40,9 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Route publique pour la page de connexion */}
-          <Route path="/login" element={<LoginForm />} />
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/login" element={<LoginPage />} />
           
-          {/* Routes protégées qui nécessitent une authentification */}
           <Route
             path="/dashboard"
             element={
@@ -55,7 +52,6 @@ function App() {
             }
           />
           
-          {/* Routes pour les référentiels */}
           <Route
             path="/skills"
             element={
@@ -75,15 +71,6 @@ function App() {
           />
           
           <Route
-            path="/departments"
-            element={
-              <ProtectedLayout>
-                <DepartmentsPage />
-              </ProtectedLayout>
-            }
-          />
-          
-          <Route
             path="/positions"
             element={
               <ProtectedLayout>
@@ -92,7 +79,6 @@ function App() {
             }
           />
           
-          {/* Routes pour la gestion */}
           <Route
             path="/employees"
             element={
@@ -111,7 +97,6 @@ function App() {
             }
           />
           
-          {/* Routes pour l'analytique */}
           <Route
             path="/skill-analytics"
             element={
@@ -130,30 +115,16 @@ function App() {
             }
           />
           
-          {/* Routes pour le profil et les paramètres */}
-          <Route
-            path="/profile"
-            element={
-              <ProtectedLayout>
-                <ProfilePage />
-              </ProtectedLayout>
-            }
-          />
-          
           <Route
             path="/settings"
             element={
               <ProtectedLayout>
-                <SettingsPage />
+                <UserSettingsPage />
               </ProtectedLayout>
             }
           />
           
-          {/* Redirection par défaut vers le tableau de bord */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          
-          {/* Redirection pour les routes inconnues */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

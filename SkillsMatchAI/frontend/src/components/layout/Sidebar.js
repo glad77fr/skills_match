@@ -23,7 +23,6 @@ import {
   ExpandMore,
   Settings as SettingsIcon,
   BarChart as AnalyticsIcon,
-  Apartment as DepartmentIcon,
   Badge as PositionIcon
 } from '@mui/icons-material';
 
@@ -137,17 +136,6 @@ const Sidebar = ({ open, onClose }) => {
                   <WorkIcon />
                 </ListItemIcon>
                 <ListItemText primary="Emplois" />
-              </ListItemButton>
-              
-              <ListItemButton
-                sx={{ pl: 3 }}
-                selected={isActive('/departments')}
-                onClick={() => handleNavigation('/departments')}
-              >
-                <ListItemIcon>
-                  <DepartmentIcon />
-                </ListItemIcon>
-                <ListItemText primary="Départements" />
               </ListItemButton>
               
               <ListItemButton

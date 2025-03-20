@@ -10,7 +10,7 @@ from rest_framework import permissions
 
 from .views import (
     UserViewSet, JobFamilyViewSet, SkillViewSet, JobViewSet,
-    DepartmentViewSet, PositionViewSet, EmployeeViewSet,
+    PositionViewSet, EmployeeViewSet,
     EmployeeSkillViewSet, PositionSkillViewSet
 )
 
@@ -34,7 +34,6 @@ router.register(r'users', UserViewSet)
 router.register(r'job-families', JobFamilyViewSet)
 router.register(r'skills', SkillViewSet)
 router.register(r'jobs', JobViewSet)
-router.register(r'departments', DepartmentViewSet)
 router.register(r'positions', PositionViewSet)
 router.register(r'employees', EmployeeViewSet)
 router.register(r'employee-skills', EmployeeSkillViewSet)

@@ -64,20 +64,6 @@ class Job(models.Model):
     def __str__(self):
         return f"{self.title} - Level {self.level}"
 
-class Department(models.Model):
-    """
-    Représente un département ou service au sein de l'organisation.
-    
-    Attributes:
-        name (str): Nom du département
-        description (text): Description du département
-    """
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
-    
-    def __str__(self):
-        return self.name
-
 class Position(models.Model):
     """
     Représente une instance concrète d'un poste au sein de l'organisation, dérivée d'un Job.
@@ -128,7 +114,6 @@ class Employee(models.Model):
         hire_date (date): Date d'embauche, permettant de suivre l'ancienneté
         date_of_birth (date): Date de naissance
         current_position (Position, optional): Référence à la position actuelle occupée
-        department (Department, optional): Référence au département auquel l'employé est rattaché
         employment_status (str): Statut de l'employé (actif, en congé, suspendu, etc.)
         profile_picture (str, optional): URL ou chemin d'accès à l'image de profil
         resume (str, optional): Lien vers le document du CV ou un résumé des compétences
@@ -147,7 +132,6 @@ class Employee(models.Model):
     hire_date = models.DateField()
     date_of_birth = models.DateField()
     current_position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True, related_name='current_employees')
-    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, related_name='employees')
     employment_status = models.CharField(
         max_length=20,
         choices=EmploymentStatus.choices,

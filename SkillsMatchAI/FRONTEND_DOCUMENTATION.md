@@ -117,6 +117,37 @@ La page communique avec les endpoints API suivants :
 - `PUT /api/positions/{id}/` : Mise à jour d'un poste existant
 - `DELETE /api/positions/{id}/` : Suppression d'un poste
 
+### Modifications récentes
+
+#### Suppression de la page des départements (Version 2.0)
+
+Dans la version 2.0, la fonctionnalité de gestion des départements a été complètement supprimée. Les changements suivants ont été effectués :
+
+1. Suppression du composant `DepartmentsPage`
+2. Suppression du service `departmentService`
+3. Suppression des routes liées aux départements dans `App.js`
+4. Suppression de l'entrée de menu des départements dans la sidebar
+5. Suppression des statistiques liées aux départements dans le dashboard
+6. Suppression des filtres par département dans la page des employés
+
+Cette modification simplifie l'interface utilisateur et la structure de l'application.
+
+#### Ajout de pages manquantes (Version 2.1)
+
+Dans la version 2.1, les pages suivantes ont été ajoutées pour compléter l'interface utilisateur :
+
+1. **LoginPage** : Page dédiée à l'authentification des utilisateurs
+   - Interface simple avec formulaire de connexion
+   - Intégration avec le composant `LoginForm` existant
+   - Style cohérent avec le reste de l'application
+
+2. **UserSettingsPage** : Page de paramètres utilisateur
+   - Informations personnelles (prénom, nom, email)
+   - Préférences d'interface (mode sombre, notifications)
+   - Fonctionnalité de sauvegarde des préférences
+
+Ces ajouts complètent l'expérience utilisateur et permettent une navigation fluide dans l'application.
+
 ## Démarrage de l'Application
 
 Pour lancer l'application en mode développement :

@@ -27,20 +27,26 @@ import {
   MenuItem,
   Chip,
   Tooltip,
-  Avatar
+  Avatar,
+  Grid,
+  Stack
 } from '@mui/material';
 import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   Search as SearchIcon,
-  Psychology as PsychologyIcon,
-  Work as WorkIcon,
-  Email as EmailIcon
+  Visibility as ViewIcon
 } from '@mui/icons-material';
 import employeeService from '../services/employeeService';
-import departmentService from '../services/departmentService';
 import { useNavigate } from 'react-router-dom';
+
+const statusOptions = [
+  { value: 'ACTIVE', label: 'Actif' },
+  { value: 'ON_LEAVE', label: 'En congé' },
+  { value: 'SUSPENDED', label: 'Suspendu' },
+  { value: 'TERMINATED', label: 'Terminé' }
+];
 
 /**
  * Page de gestion des employés
@@ -49,94 +55,66 @@ import { useNavigate } from 'react-router-dom';
 const EmployeesPage = () => {
   const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
-  const [departments, setDepartments] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // États pour la pagination et le tri
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [totalCount, setTotalCount] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [departmentFilter, setDepartmentFilter] = useState('');
   
-  // Form states
+  // États pour les filtres
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  
+  // États pour le formulaire
   const [openForm, setOpenForm] = useState(false);
-  const [formTitle, setFormTitle] = useState('');
-  const [currentEmployee, setCurrentEmployee] = useState(null);
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
     email: '',
-    phone: '',
-    department: '',
-    position: '',
+    phone_number: '',
     hire_date: '',
-    is_active: true
+    date_of_birth: '',
+    employment_status: 'ACTIVE',
   });
-  const [formErrors, setFormErrors] = useState({});
+  const [currentEmployee, setCurrentEmployee] = useState(null);
   
-  // Delete dialog
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  // États pour la confirmation de suppression
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   
-  // Notification
+  // État pour les notifications
   const [notification, setNotification] = useState({
     open: false,
     message: '',
     severity: 'success'
   });
 
-  const fetchDepartments = useCallback(async () => {
-    try {
-      const data = await departmentService.getDepartments();
-      setDepartments(data.results || []);
-    } catch (error) {
-      console.error('Erreur lors de la récupération des départements:', error);
-      showNotification('Erreur lors de la récupération des départements', 'error');
-    }
-  }, []);
-
+  // Fonction pour récupérer les employés avec filtres
   const fetchEmployees = useCallback(async () => {
     setLoading(true);
+    setError(null);
+    
     try {
       const params = {
-        page: page + 1,
-        page_size: rowsPerPage,
-        search: searchQuery,
-        department: departmentFilter
+        search: searchTerm,
+        status: statusFilter
       };
       
       const data = await employeeService.getEmployees(params);
       setEmployees(data.results || []);
-      setTotalCount(data.count || 0);
-    } catch (error) {
-      console.error('Erreur lors de la récupération des employés:', error);
-      showNotification('Erreur lors de la récupération des employés', 'error');
+    } catch (err) {
+      console.error('Erreur lors de la récupération des employés:', err);
+      setError('Impossible de charger les employés. Veuillez réessayer plus tard.');
     } finally {
       setLoading(false);
     }
-  }, [page, rowsPerPage, searchQuery, departmentFilter]);
+  }, [searchTerm, statusFilter]);
 
-  useEffect(() => {
-    fetchDepartments();
-  }, [fetchDepartments]);
-
+  // Charger les employés au chargement de la page et lorsque les filtres changent
   useEffect(() => {
     fetchEmployees();
   }, [fetchEmployees]);
-
-  const showNotification = (message, severity = 'success') => {
-    setNotification({
-      open: true,
-      message,
-      severity
-    });
-  };
-
-  const handleCloseNotification = () => {
-    setNotification({
-      ...notification,
-      open: false
-    });
-  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -148,33 +126,29 @@ const EmployeesPage = () => {
   };
 
   const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
-    setPage(0);
+    setSearchTerm(event.target.value);
   };
 
-  const handleDepartmentFilterChange = (event) => {
-    setDepartmentFilter(event.target.value);
-    setPage(0);
+  const handleStatusFilterChange = (event) => {
+    setStatusFilter(event.target.value);
   };
 
-  const resetForm = () => {
+  const resetFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('');
+  };
+
+  const openAddForm = () => {
     setFormData({
       first_name: '',
       last_name: '',
       email: '',
-      phone: '',
-      department: '',
-      position: '',
+      phone_number: '',
       hire_date: '',
-      is_active: true
+      date_of_birth: '',
+      employment_status: 'ACTIVE',
     });
-    setFormErrors({});
     setCurrentEmployee(null);
-  };
-
-  const openAddForm = () => {
-    resetForm();
-    setFormTitle('Ajouter un employé');
     setOpenForm(true);
   };
 
@@ -184,81 +158,57 @@ const EmployeesPage = () => {
       first_name: employee.first_name || '',
       last_name: employee.last_name || '',
       email: employee.email || '',
-      phone: employee.phone || '',
-      department: employee.department?.id || '',
-      position: employee.position?.id || '',
-      hire_date: employee.hire_date || '',
-      is_active: employee.is_active !== undefined ? employee.is_active : true
+      phone_number: employee.phone_number || '',
+      hire_date: employee.hire_date ? employee.hire_date.split('T')[0] : '',
+      date_of_birth: employee.date_of_birth ? employee.date_of_birth.split('T')[0] : '',
+      employment_status: employee.employment_status || 'ACTIVE',
     });
-    setFormTitle('Modifier l\'employé');
     setOpenForm(true);
   };
 
-  const handleCloseForm = () => {
+  const closeForm = () => {
     setOpenForm(false);
-    resetForm();
   };
 
-  const validateForm = () => {
-    const errors = {};
-    if (!formData.first_name.trim()) {
-      errors.first_name = 'Le prénom est requis';
-    }
-    if (!formData.last_name.trim()) {
-      errors.last_name = 'Le nom est requis';
-    }
-    if (!formData.email.trim()) {
-      errors.email = 'L\'email est requis';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'L\'email n\'est pas valide';
-    }
-    
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+  const handleFormChange = (event) => {
+    const { name, value } = event.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  const handleFormChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value
-    });
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
     
-    // Clear error when field is edited
-    if (formErrors[name]) {
-      setFormErrors({
-        ...formErrors,
-        [name]: ''
-      });
-    }
-  };
-
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-    
-    setLoading(true);
     try {
       if (currentEmployee) {
         // Update existing employee
         await employeeService.updateEmployee(currentEmployee.id, formData);
-        showNotification('Employé mis à jour avec succès');
+        setNotification({
+          open: true,
+          message: 'Employé mis à jour avec succès',
+          severity: 'success'
+        });
       } else {
         // Create new employee
         await employeeService.createEmployee(formData);
-        showNotification('Employé créé avec succès');
+        setNotification({
+          open: true,
+          message: 'Employé créé avec succès',
+          severity: 'success'
+        });
       }
       
-      handleCloseForm();
+      closeForm();
       fetchEmployees();
-    } catch (error) {
-      console.error('Erreur lors de l\'enregistrement de l\'employé:', error);
-      showNotification('Erreur lors de l\'enregistrement de l\'employé', 'error');
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.error('Erreur lors de la sauvegarde de l\'employé:', err);
+      setNotification({
+        open: true,
+        message: 'Erreur lors de la sauvegarde. Veuillez réessayer.',
+        severity: 'error'
+      });
     }
   };
 
@@ -267,7 +217,7 @@ const EmployeesPage = () => {
     setOpenDeleteDialog(true);
   };
 
-  const handleCloseDeleteDialog = () => {
+  const closeDeleteDialog = () => {
     setOpenDeleteDialog(false);
     setEmployeeToDelete(null);
   };
@@ -275,39 +225,60 @@ const EmployeesPage = () => {
   const handleDeleteEmployee = async () => {
     if (!employeeToDelete) return;
     
-    setLoading(true);
     try {
       await employeeService.deleteEmployee(employeeToDelete.id);
-      showNotification('Employé supprimé avec succès');
+      setNotification({
+        open: true,
+        message: 'Employé supprimé avec succès',
+        severity: 'success'
+      });
+      closeDeleteDialog();
       fetchEmployees();
-    } catch (error) {
-      console.error('Erreur lors de la suppression de l\'employé:', error);
-      showNotification('Erreur lors de la suppression de l\'employé', 'error');
-    } finally {
-      setLoading(false);
-      handleCloseDeleteDialog();
+    } catch (err) {
+      console.error('Erreur lors de la suppression de l\'employé:', err);
+      setNotification({
+        open: true,
+        message: 'Erreur lors de la suppression. Veuillez réessayer.',
+        severity: 'error'
+      });
     }
   };
 
-  const viewEmployeeSkills = (employeeId) => {
-    navigate(`/employees/${employeeId}/skills`);
+  const viewEmployeeDetails = (employeeId) => {
+    navigate(`/employees/${employeeId}`);
   };
 
-  const viewEmployeePositions = (employeeId) => {
-    navigate(`/employees/${employeeId}/positions`);
+  const closeNotification = () => {
+    setNotification(prev => ({
+      ...prev,
+      open: false
+    }));
   };
 
-  const getInitials = (firstName, lastName) => {
-    return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
-  };
-
-  const getFullName = (employee) => {
-    return `${employee.first_name || ''} ${employee.last_name || ''}`.trim();
-  };
-
-  const getDepartmentName = (departmentId) => {
-    const department = departments.find(d => d.id === departmentId);
-    return department ? department.name : 'Non assigné';
+  const getStatusChip = (status) => {
+    let color = 'default';
+    switch (status) {
+      case 'ACTIVE':
+        color = 'success';
+        break;
+      case 'ON_LEAVE':
+        color = 'warning';
+        break;
+      case 'SUSPENDED':
+        color = 'error';
+        break;
+      case 'TERMINATED':
+        color = 'default';
+        break;
+      default:
+        color = 'default';
+    }
+    
+    const statusLabel = statusOptions.find(opt => opt.value === status)?.label || status;
+    
+    return (
+      <Chip label={statusLabel} color={color} size="small" />
+    );
   };
 
   return (
@@ -322,7 +293,7 @@ const EmployeesPage = () => {
             label="Rechercher"
             variant="outlined"
             size="small"
-            value={searchQuery}
+            value={searchTerm}
             onChange={handleSearchChange}
             sx={{ width: '250px' }}
             InputProps={{
@@ -335,18 +306,18 @@ const EmployeesPage = () => {
           />
           
           <FormControl size="small" sx={{ minWidth: 200 }}>
-            <InputLabel id="department-filter-label">Filtrer par département</InputLabel>
+            <InputLabel id="status-filter-label">Filtrer par statut</InputLabel>
             <Select
-              labelId="department-filter-label"
-              id="department-filter"
-              value={departmentFilter}
-              label="Filtrer par département"
-              onChange={handleDepartmentFilterChange}
+              labelId="status-filter-label"
+              id="status-filter"
+              value={statusFilter}
+              label="Filtrer par statut"
+              onChange={handleStatusFilterChange}
             >
-              <MenuItem value="">Tous les départements</MenuItem>
-              {departments.map((department) => (
-                <MenuItem key={department.id} value={department.id}>
-                  {department.name}
+              <MenuItem value="">Tous les statuts</MenuItem>
+              {statusOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
                 </MenuItem>
               ))}
             </Select>
@@ -370,8 +341,6 @@ const EmployeesPage = () => {
               <TableCell>Employé</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Téléphone</TableCell>
-              <TableCell>Département</TableCell>
-              <TableCell>Poste</TableCell>
               <TableCell>Statut</TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
@@ -395,64 +364,51 @@ const EmployeesPage = () => {
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Avatar sx={{ bgcolor: 'primary.main', width: 36, height: 36 }}>
-                        {getInitials(employee.first_name, employee.last_name)}
+                        {`${employee.first_name?.charAt(0) || ''} ${employee.last_name?.charAt(0) || ''}`.toUpperCase()}
                       </Avatar>
                       <Typography variant="body2">
-                        {getFullName(employee)}
+                        {`${employee.first_name || ''} ${employee.last_name || ''}`.trim()}
                       </Typography>
                     </Box>
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <EmailIcon fontSize="small" color="action" />
                       <Typography variant="body2">
                         {employee.email || 'Non spécifié'}
                       </Typography>
                     </Box>
                   </TableCell>
-                  <TableCell>{employee.phone || 'Non spécifié'}</TableCell>
-                  <TableCell>{employee.department ? employee.department.name : 'Non assigné'}</TableCell>
-                  <TableCell>{employee.position ? employee.position.title : 'Non assigné'}</TableCell>
+                  <TableCell>{employee.phone_number || 'Non spécifié'}</TableCell>
                   <TableCell>
-                    <Chip 
-                      label={employee.is_active ? 'Actif' : 'Inactif'} 
-                      color={employee.is_active ? 'success' : 'default'}
-                      size="small"
-                    />
+                    {getStatusChip(employee.employment_status)}
                   </TableCell>
                   <TableCell align="center">
-                    <Tooltip title="Voir les compétences">
-                      <IconButton 
-                        color="primary" 
-                        onClick={() => viewEmployeeSkills(employee.id)}
-                      >
-                        <PsychologyIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Voir les postes">
-                      <IconButton 
-                        color="primary" 
-                        onClick={() => viewEmployeePositions(employee.id)}
-                      >
-                        <WorkIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Modifier">
-                      <IconButton 
-                        color="primary" 
-                        onClick={() => openEditForm(employee)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Supprimer">
-                      <IconButton 
-                        color="error" 
-                        onClick={() => openDeleteConfirmation(employee)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
+                    <Stack direction="row" spacing={1}>
+                      <Tooltip title="Voir les détails">
+                        <IconButton 
+                          color="primary" 
+                          onClick={() => viewEmployeeDetails(employee.id)}
+                        >
+                          <ViewIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Modifier">
+                        <IconButton 
+                          color="primary" 
+                          onClick={() => openEditForm(employee)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Supprimer">
+                        <IconButton 
+                          color="error" 
+                          onClick={() => openDeleteConfirmation(employee)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
                   </TableCell>
                 </TableRow>
               ))
@@ -463,7 +419,7 @@ const EmployeesPage = () => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={totalCount}
+          count={employees.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -474,127 +430,100 @@ const EmployeesPage = () => {
       </TableContainer>
       
       {/* Form Dialog */}
-      <Dialog open={openForm} onClose={handleCloseForm} maxWidth="sm" fullWidth>
-        <DialogTitle>{formTitle}</DialogTitle>
+      <Dialog open={openForm} onClose={closeForm} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {currentEmployee ? `Modifier l'employé: ${currentEmployee.first_name} ${currentEmployee.last_name}` : 'Ajouter un nouvel employé'}
+        </DialogTitle>
         <form onSubmit={handleFormSubmit}>
           <DialogContent>
-            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-              <TextField
-                autoFocus
-                margin="dense"
-                name="first_name"
-                label="Prénom"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={formData.first_name}
-                onChange={handleFormChange}
-                error={!!formErrors.first_name}
-                helperText={formErrors.first_name}
-                required
-              />
-              
-              <TextField
-                margin="dense"
-                name="last_name"
-                label="Nom"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={formData.last_name}
-                onChange={handleFormChange}
-                error={!!formErrors.last_name}
-                helperText={formErrors.last_name}
-                required
-              />
-            </Box>
-            
-            <TextField
-              margin="dense"
-              name="email"
-              label="Email"
-              type="email"
-              fullWidth
-              variant="outlined"
-              value={formData.email}
-              onChange={handleFormChange}
-              error={!!formErrors.email}
-              helperText={formErrors.email}
-              required
-              sx={{ mb: 2 }}
-            />
-            
-            <TextField
-              margin="dense"
-              name="phone"
-              label="Téléphone"
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={formData.phone}
-              onChange={handleFormChange}
-              sx={{ mb: 2 }}
-            />
-            
-            <FormControl fullWidth margin="dense" sx={{ mb: 2 }}>
-              <InputLabel id="department-label">Département</InputLabel>
-              <Select
-                labelId="department-label"
-                name="department"
-                value={formData.department}
-                label="Département"
-                onChange={handleFormChange}
-              >
-                <MenuItem value="">Non assigné</MenuItem>
-                {departments.map((department) => (
-                  <MenuItem key={department.id} value={department.id}>
-                    {department.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            
-            <TextField
-              margin="dense"
-              name="hire_date"
-              label="Date d'embauche"
-              type="date"
-              fullWidth
-              variant="outlined"
-              value={formData.hire_date}
-              onChange={handleFormChange}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              sx={{ mb: 2 }}
-            />
-            
-            <FormControl fullWidth margin="dense">
-              <InputLabel id="status-label">Statut</InputLabel>
-              <Select
-                labelId="status-label"
-                name="is_active"
-                value={formData.is_active}
-                label="Statut"
-                onChange={handleFormChange}
-              >
-                <MenuItem value={true}>Actif</MenuItem>
-                <MenuItem value={false}>Inactif</MenuItem>
-              </Select>
-            </FormControl>
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  required
+                  fullWidth
+                  label="Prénom"
+                  name="first_name"
+                  value={formData.first_name}
+                  onChange={handleFormChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  required
+                  fullWidth
+                  label="Nom"
+                  name="last_name"
+                  value={formData.last_name}
+                  onChange={handleFormChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  type="email"
+                  label="Email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleFormChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Téléphone"
+                  name="phone_number"
+                  value={formData.phone_number}
+                  onChange={handleFormChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  required
+                  fullWidth
+                  type="date"
+                  label="Date d'embauche"
+                  name="hire_date"
+                  value={formData.hire_date}
+                  onChange={handleFormChange}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  required
+                  fullWidth
+                  type="date"
+                  label="Date de naissance"
+                  name="date_of_birth"
+                  value={formData.date_of_birth}
+                  onChange={handleFormChange}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl fullWidth required>
+                  <InputLabel id="status-label">Statut d'emploi</InputLabel>
+                  <Select
+                    labelId="status-label"
+                    name="employment_status"
+                    value={formData.employment_status}
+                    label="Statut d'emploi"
+                    onChange={handleFormChange}
+                  >
+                    {statusOptions.map(option => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseForm} disabled={loading}>
-              Annuler
-            </Button>
-            <Button 
-              type="submit" 
-              variant="contained" 
-              color="primary"
-              disabled={loading}
-            >
-              {loading ? <CircularProgress size={24} /> : 'Enregistrer'}
-            </Button>
+            <Button onClick={closeForm}>Annuler</Button>
+            <Button type="submit" variant="contained">Enregistrer</Button>
           </DialogActions>
         </form>
       </Dialog>
@@ -602,25 +531,22 @@ const EmployeesPage = () => {
       {/* Delete Confirmation Dialog */}
       <Dialog
         open={openDeleteDialog}
-        onClose={handleCloseDeleteDialog}
+        onClose={closeDeleteDialog}
       >
         <DialogTitle>Confirmer la suppression</DialogTitle>
         <DialogContent>
           <Typography>
-            Êtes-vous sûr de vouloir supprimer l'employé "{employeeToDelete ? getFullName(employeeToDelete) : ''}" ? Cette action est irréversible.
+            Êtes-vous sûr de vouloir supprimer l'employé "{employeeToDelete?.first_name} {employeeToDelete?.last_name}" ? Cette action est irréversible.
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} disabled={loading}>
-            Annuler
-          </Button>
+          <Button onClick={closeDeleteDialog}>Annuler</Button>
           <Button 
             onClick={handleDeleteEmployee} 
             color="error" 
             variant="contained"
-            disabled={loading}
           >
-            {loading ? <CircularProgress size={24} /> : 'Supprimer'}
+            Supprimer
           </Button>
         </DialogActions>
       </Dialog>
@@ -629,10 +555,14 @@ const EmployeesPage = () => {
       <Snackbar
         open={notification.open}
         autoHideDuration={6000}
-        onClose={handleCloseNotification}
+        onClose={closeNotification}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert onClose={handleCloseNotification} severity={notification.severity} sx={{ width: '100%' }}>
+        <Alert 
+          onClose={closeNotification} 
+          severity={notification.severity} 
+          sx={{ width: '100%' }}
+        >
           {notification.message}
         </Alert>
       </Snackbar>

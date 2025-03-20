@@ -59,12 +59,16 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       setLoading(true);
+      console.log('AuthContext: Tentative de connexion avec', username);
       const userData = await authService.login(username, password);
+      console.log('AuthContext: Utilisateur connecté avec succès:', userData);
       setUser(userData);
       setAuthenticated(true);
       return userData;
     } catch (error) {
       console.error("Erreur lors de la connexion:", error);
+      setAuthenticated(false);
+      setUser(null);
       throw error;
     } finally {
       setLoading(false);

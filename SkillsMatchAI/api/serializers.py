@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from jobs.models import (
-    JobFamily, Skill, Job, Department, Position, 
+    JobFamily, Skill, Job, Position, 
     Employee, EmployeeSkill, PositionSkill
 )
 from django.contrib.auth.models import User
@@ -51,21 +51,12 @@ class JobDetailSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class DepartmentSerializer(serializers.ModelSerializer):
-    """Sérialiseur pour le modèle Department."""
-    
-    class Meta:
-        model = Department
-        fields = '__all__'
-
-
 class EmployeeListSerializer(serializers.ModelSerializer):
     """Sérialiseur pour la liste des employés."""
-    department_name = serializers.ReadOnlyField(source='department.name')
     
     class Meta:
         model = Employee
-        fields = ('id', 'first_name', 'last_name', 'email', 'department', 'department_name', 'employment_status')
+        fields = ('id', 'first_name', 'last_name', 'email', 'employment_status')
 
 
 class EmployeeSkillSerializer(serializers.ModelSerializer):
@@ -80,7 +71,6 @@ class EmployeeSkillSerializer(serializers.ModelSerializer):
 
 class EmployeeDetailSerializer(serializers.ModelSerializer):
     """Sérialiseur détaillé pour le modèle Employee."""
-    department = DepartmentSerializer(read_only=True)
     skills = EmployeeSkillSerializer(many=True, read_only=True)
     
     class Meta:
