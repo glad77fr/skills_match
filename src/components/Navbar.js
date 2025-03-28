@@ -63,10 +63,6 @@ const Navbar = () => {
     handleCloseUserMenu();
     navigate('/settings');
   };
-  
-  const handleDashboard = () => {
-    navigate('/dashboard');
-  };
 
   const toggleDrawer = (open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -83,8 +79,8 @@ const Navbar = () => {
           <Typography
             variant="h6"
             noWrap
-            component="div"
-            onClick={handleDashboard}
+            component={RouterLink}
+            to="/dashboard"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -123,15 +119,6 @@ const Navbar = () => {
                 onKeyDown={toggleDrawer(false)}
               >
                 <List>
-                  <ListItem disablePadding>
-                    <ListItemButton onClick={() => navigate('/dashboard')}>
-                      <ListItemIcon>
-                        <DashboardIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Tableau de bord" />
-                    </ListItemButton>
-                  </ListItem>
-                  <Divider />
                   {pages.map((page) => (
                     <ListItem key={page.name} disablePadding>
                       <ListItemButton component={RouterLink} to={page.path}>
@@ -170,8 +157,8 @@ const Navbar = () => {
           <Typography
             variant="h5"
             noWrap
-            component="div"
-            onClick={handleDashboard}
+            component={RouterLink}
+            to="/dashboard"
             sx={{
               mr: 2,
               display: { xs: 'flex', md: 'none' },
@@ -189,12 +176,6 @@ const Navbar = () => {
 
           {/* Menu de navigation pour les écrans larges */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            <Button
-              onClick={() => navigate('/dashboard')}
-              sx={{ my: 2, color: 'white', display: 'block' }}
-            >
-              Tableau de bord
-            </Button>
             {pages.map((page) => (
               <Button
                 key={page.name}
