@@ -35,7 +35,8 @@ function App() {
             
             {/* Routes protégées */}
             <Route element={<PrivateLayout />}>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/employees" element={<EmployeeList />} />
               <Route path="/jobs" element={<JobList />} />
               <Route path="/settings" element={<Settings />} />
@@ -43,7 +44,7 @@ function App() {
             </Route>
             
             {/* Redirection par défaut */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </Router>
       </AuthProvider>

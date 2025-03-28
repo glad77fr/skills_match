@@ -27,14 +27,13 @@ import WorkIcon from '@mui/icons-material/Work';
 import BusinessIcon from '@mui/icons-material/Business';
 import PsychologyIcon from '@mui/icons-material/Psychology';
 import LogoutIcon from '@mui/icons-material/Logout';
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import SettingsIcon from '@mui/icons-material/Settings';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 const pages = [
-  { name: 'Tableau de bord', path: '/', icon: <DashboardIcon /> },
-  { name: 'Employés', path: '/employees', icon: <PersonIcon /> },
   { name: 'Métiers', path: '/jobs', icon: <BusinessIcon /> },
   { name: 'Postes', path: '/positions', icon: <WorkIcon /> },
+  { name: 'Employés', path: '/employees', icon: <PersonIcon /> },
   { name: 'Compétences', path: '/skills', icon: <PsychologyIcon /> }
 ];
 
@@ -62,6 +61,10 @@ const Navbar = () => {
     handleCloseUserMenu();
     navigate('/settings');
   };
+  
+  const handleDashboard = () => {
+    navigate('/dashboard');
+  };
 
   const toggleDrawer = (open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -78,8 +81,8 @@ const Navbar = () => {
           <Typography
             variant="h6"
             noWrap
-            component={RouterLink}
-            to="/"
+            component="div"
+            onClick={handleDashboard}
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -88,6 +91,7 @@ const Navbar = () => {
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
+              cursor: 'pointer'
             }}
           >
             SkillsMatchAI
@@ -117,6 +121,15 @@ const Navbar = () => {
                 onKeyDown={toggleDrawer(false)}
               >
                 <List>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => navigate('/dashboard')}>
+                      <ListItemIcon>
+                        <DashboardIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Tableau de bord" />
+                    </ListItemButton>
+                  </ListItem>
+                  <Divider />
                   {pages.map((page) => (
                     <ListItem key={page.name} disablePadding>
                       <ListItemButton component={RouterLink} to={page.path}>
@@ -155,8 +168,8 @@ const Navbar = () => {
           <Typography
             variant="h5"
             noWrap
-            component={RouterLink}
-            to="/"
+            component="div"
+            onClick={handleDashboard}
             sx={{
               mr: 2,
               display: { xs: 'flex', md: 'none' },
@@ -166,6 +179,7 @@ const Navbar = () => {
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
+              cursor: 'pointer'
             }}
           >
             SkillsMatchAI
@@ -173,6 +187,12 @@ const Navbar = () => {
 
           {/* Menu de navigation pour les écrans larges */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+            <Button
+              onClick={() => navigate('/dashboard')}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Tableau de bord
+            </Button>
             {pages.map((page) => (
               <Button
                 key={page.name}
