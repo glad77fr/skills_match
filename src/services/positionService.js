@@ -1,36 +1,82 @@
 import api from './api';
 
-// Récupérer la liste des positions avec pagination
-export const getPositions = (page = 1) => {
-  return api.get(`positions/?page=${page}`);
+const positionService = {
+  // Récupérer la liste des positions avec pagination
+  getPositions: async (params = {}) => {
+    try {
+      const response = await api.get('/positions/', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des positions:', error);
+      throw error;
+    }
+  },
+
+  // Récupérer une position par son ID
+  getPositionById: async (id) => {
+    try {
+      const response = await api.get(`/positions/${id}/`);
+      return response.data;
+    } catch (error) {
+      console.error(`Erreur lors de la récupération de la position ${id}:`, error);
+      throw error;
+    }
+  },
+
+  // Créer une nouvelle position
+  createPosition: async (positionData) => {
+    try {
+      const response = await api.post('/positions/', positionData);
+      return response.data;
+    } catch (error) {
+      console.error('Erreur lors de la création de la position:', error);
+      throw error;
+    }
+  },
+
+  // Mettre à jour une position
+  updatePosition: async (id, positionData) => {
+    try {
+      const response = await api.put(`/positions/${id}/`, positionData);
+      return response.data;
+    } catch (error) {
+      console.error(`Erreur lors de la mise à jour de la position ${id}:`, error);
+      throw error;
+    }
+  },
+
+  // Supprimer une position
+  deletePosition: async (id) => {
+    try {
+      await api.delete(`/positions/${id}/`);
+      return true;
+    } catch (error) {
+      console.error(`Erreur lors de la suppression de la position ${id}:`, error);
+      throw error;
+    }
+  },
+
+  // Récupérer les compétences requises pour une position
+  getPositionSkills: async (id) => {
+    try {
+      const response = await api.get(`/positions/${id}/required_skills/`);
+      return response.data;
+    } catch (error) {
+      console.error(`Erreur lors de la récupération des compétences requises pour la position ${id}:`, error);
+      throw error;
+    }
+  },
+
+  // Assigner un employé à une position
+  assignEmployee: async (positionId, employeeId) => {
+    try {
+      const response = await api.post(`/positions/${positionId}/assign_employee/`, { employee_id: employeeId });
+      return response.data;
+    } catch (error) {
+      console.error(`Erreur lors de l'assignation de l'employé ${employeeId} à la position ${positionId}:`, error);
+      throw error;
+    }
+  }
 };
 
-// Récupérer une position par son ID
-export const getPosition = (id) => {
-  return api.get(`positions/${id}/`);
-};
-
-// Créer une nouvelle position
-export const createPosition = (positionData) => {
-  return api.post('positions/', positionData);
-};
-
-// Mettre à jour une position
-export const updatePosition = (id, positionData) => {
-  return api.put(`positions/${id}/`, positionData);
-};
-
-// Supprimer une position
-export const deletePosition = (id) => {
-  return api.delete(`positions/${id}/`);
-};
-
-// Récupérer les compétences requises pour une position
-export const getPositionSkills = (id) => {
-  return api.get(`positions/${id}/required_skills/`);
-};
-
-// Assigner un employé à une position
-export const assignEmployee = (positionId, employeeId) => {
-  return api.post(`positions/${positionId}/assign_employee/`, { employee_id: employeeId });
-}; 
+export default positionService; 

@@ -23,17 +23,21 @@ const evaluationService = {
   
   getEvaluationsByEmployee: async (employeeId) => {
     try {
-      const response = await api.get('/evaluations/by_employee/', { params: { employee_id: employeeId } });
+      const response = await api.get('/evaluations/', { 
+        params: { employee: employeeId } 
+      });
       return response.data;
     } catch (error) {
-      console.error(`Erreur lors de la récupération des évaluations de l'employé ${employeeId}:`, error);
+      console.error(`Erreur lors de la récupération des évaluations pour l'employé ${employeeId}:`, error);
       throw error;
     }
   },
   
   getEvaluationsBySkill: async (skillId) => {
     try {
-      const response = await api.get('/evaluations/by_skill/', { params: { skill_id: skillId } });
+      const response = await api.get('/evaluations/', { 
+        params: { skill: skillId } 
+      });
       return response.data;
     } catch (error) {
       console.error(`Erreur lors de la récupération des évaluations pour la compétence ${skillId}:`, error);

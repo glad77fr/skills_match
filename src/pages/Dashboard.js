@@ -19,9 +19,9 @@ import {
 import PersonIcon from '@mui/icons-material/Person';
 import WorkIcon from '@mui/icons-material/Work';
 import PsychologyIcon from '@mui/icons-material/Psychology';
-import { getEmployees } from '../services/employeeService';
-import { getPositions } from '../services/positionService';
-import { getSkills } from '../services/skillService';
+import employeeService from '../services/employeeService';
+import positionService from '../services/positionService';
+import skillService from '../services/skillService';
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -40,23 +40,23 @@ const Dashboard = () => {
         
         // Récupérer les données de base
         const [employeesRes, positionsRes, skillsRes] = await Promise.all([
-          getEmployees(),
-          getPositions(),
-          getSkills()
+          employeeService.getEmployees(),
+          positionService.getPositions(),
+          skillService.getSkills()
         ]);
         
         // Mettre à jour les statistiques
         setStats({
-          employees: employeesRes.data.count || 0,
-          positions: positionsRes.data.count || 0,
-          skills: skillsRes.data.count || 0
+          employees: employeesRes.count || 0,
+          positions: positionsRes.count || 0,
+          skills: skillsRes.count || 0
         });
         
         // Récupérer les employés récents
-        setRecentEmployees(employeesRes.data.results.slice(0, 5));
+        setRecentEmployees(employeesRes.results.slice(0, 5));
         
         // Récupérer les positions vacantes
-        const vacant = positionsRes.data.results.filter(pos => pos.status === 'VACANT');
+        const vacant = positionsRes.results.filter(pos => pos.status === 'VACANT');
         setVacantPositions(vacant.slice(0, 5));
         
         setLoading(false);

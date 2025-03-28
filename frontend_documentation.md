@@ -49,6 +49,25 @@ Composant de dialogue permettant de sélectionner une compétence à évaluer.
 - `onSelect`: Fonction appelée lorsqu'une compétence est sélectionnée
 - `excludeSkills`: IDs des compétences à exclure de la liste (optionnel)
 
+## Pages
+
+### EvaluationList
+
+Page permettant de gérer l'ensemble des évaluations de compétences dans l'application.
+
+**Fonctionnalités**:
+- Affichage de toutes les évaluations dans un tableau paginé
+- Filtrage des évaluations par employé, compétence ou recherche textuelle
+- Ajout d'une nouvelle évaluation via un dialogue dédié
+- Modification d'une évaluation existante
+- Suppression d'une évaluation avec confirmation
+
+**Sections**:
+- Barre de filtres avec recherche textuelle et sélection par employé ou compétence
+- Tableau des évaluations avec niveau visuel (composant SkillLevelIndicator)
+- Dialogue d'ajout/modification utilisant le composant EmployeeSkillEvaluation
+- Dialogue de confirmation de suppression
+
 ## Services
 
 ### evaluationService
@@ -79,6 +98,20 @@ La page de détail d'un employé a été enrichie avec une section dédiée à l
 - Modification d'une évaluation existante
 - Affichage des niveaux de compétence avec visualisation par étoiles
 - Exclusion des compétences déjà évaluées lors de l'ajout d'une nouvelle compétence
+
+## Intégration dans la navigation
+
+Les évaluations ont été ajoutées à la barre de navigation principale avec une icône dédiée, permettant d'accéder facilement à la page de gestion des évaluations. Cette intégration se trouve dans les composants suivants:
+
+1. `Navbar.js`: Ajout d'une entrée "Évaluations" dans le menu principal avec une icône `AssessmentIcon`
+2. `App.js`: Configuration de la route `/evaluations` pour accéder à la page `EvaluationList`
+
+## Intégration dans les paramètres
+
+La section de paramètres a été étendue pour inclure les configurations spécifiques aux évaluations:
+
+1. Ajout d'une option "Évaluations" dans le sélecteur de type d'entité
+2. Configuration de champs personnalisés dédiés aux évaluations (contexte, objectifs, etc.)
 
 ## Tests
 

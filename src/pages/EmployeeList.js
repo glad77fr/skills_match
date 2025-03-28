@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { getEmployees } from '../services/employeeService';
+import employeeService from '../services/employeeService';
 import {
   Container,
   Typography,
@@ -37,9 +37,9 @@ const EmployeeList = () => {
   const fetchEmployees = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await getEmployees(page);
-      setEmployees(response.data.results);
-      setTotalPages(Math.ceil(response.data.count / 10));
+      const response = await employeeService.getEmployees({ page });
+      setEmployees(response.results);
+      setTotalPages(Math.ceil(response.count / 10));
       setLoading(false);
     } catch (error) {
       console.error('Erreur lors du chargement des employés:', error);

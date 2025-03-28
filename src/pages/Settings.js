@@ -57,6 +57,12 @@ const Settings = () => {
       field2: { label: 'Années d\'expérience', visible: true },
       field3: { label: 'Langues parlées', visible: false },
       field4: { label: 'Champ personnalisé 4', visible: false }
+    },
+    evaluation: {
+      field1: { label: 'Contexte d\'évaluation', visible: true },
+      field2: { label: 'Objectifs de développement', visible: true },
+      field3: { label: 'Date de réévaluation', visible: false },
+      field4: { label: 'Commentaires supplémentaires', visible: false }
     }
   });
   
@@ -118,7 +124,8 @@ const Settings = () => {
       job: 'Métiers',
       position: 'Postes',
       skill: 'Compétences',
-      employee: 'Employés'
+      employee: 'Employés',
+      evaluation: 'Évaluations'
     };
     return labels[type] || type;
   };
@@ -204,6 +211,7 @@ const Settings = () => {
                     <MenuItem value="position">Postes</MenuItem>
                     <MenuItem value="skill">Compétences</MenuItem>
                     <MenuItem value="employee">Employés</MenuItem>
+                    <MenuItem value="evaluation">Évaluations</MenuItem>
                   </Select>
                 </FormControl>
               </Box>

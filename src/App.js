@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import EmployeeList from './pages/EmployeeList';
 import JobList from './pages/JobList';
 import Settings from './pages/Settings';
+import EvaluationList from './pages/EvaluationList';
 
 // Créer un thème personnalisé
 const theme = createTheme({
@@ -40,6 +41,7 @@ function App() {
               <Route path="/employees" element={<EmployeeList />} />
               <Route path="/jobs" element={<JobList />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/evaluations" element={<EvaluationList />} />
               {/* Ajouter d'autres routes ici */}
             </Route>
             

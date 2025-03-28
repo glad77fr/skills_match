@@ -29,12 +29,14 @@ import PsychologyIcon from '@mui/icons-material/Psychology';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 
 const pages = [
   { name: 'Métiers', path: '/jobs', icon: <BusinessIcon /> },
   { name: 'Postes', path: '/positions', icon: <WorkIcon /> },
   { name: 'Employés', path: '/employees', icon: <PersonIcon /> },
-  { name: 'Compétences', path: '/skills', icon: <PsychologyIcon /> }
+  { name: 'Compétences', path: '/skills', icon: <PsychologyIcon /> },
+  { name: 'Évaluations', path: '/evaluations', icon: <AssessmentIcon /> }
 ];
 
 const Navbar = () => {
