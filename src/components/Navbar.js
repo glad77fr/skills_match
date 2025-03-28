@@ -27,6 +27,7 @@ import WorkIcon from '@mui/icons-material/Work';
 import PsychologyIcon from '@mui/icons-material/Psychology';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const pages = [
   { name: 'Tableau de bord', path: '/', icon: <DashboardIcon /> },
@@ -53,6 +54,11 @@ const Navbar = () => {
     logout();
     handleCloseUserMenu();
     navigate('/login');
+  };
+  
+  const handleSettings = () => {
+    handleCloseUserMenu();
+    navigate('/settings');
   };
 
   const toggleDrawer = (open) => (event) => {
@@ -122,6 +128,14 @@ const Navbar = () => {
                 </List>
                 <Divider />
                 <List>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => navigate('/settings')}>
+                      <ListItemIcon>
+                        <SettingsIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Paramètres" />
+                    </ListItemButton>
+                  </ListItem>
                   <ListItem disablePadding>
                     <ListItemButton onClick={handleLogout}>
                       <ListItemIcon>
@@ -196,7 +210,13 @@ const Navbar = () => {
                 <MenuItem onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">Profil</Typography>
                 </MenuItem>
+                <MenuItem onClick={handleSettings}>
+                  <SettingsIcon fontSize="small" sx={{ mr: 1 }} />
+                  <Typography textAlign="center">Paramètres</Typography>
+                </MenuItem>
+                <Divider sx={{ my: 0.5 }} />
                 <MenuItem onClick={handleLogout}>
+                  <LogoutIcon fontSize="small" sx={{ mr: 1 }} />
                   <Typography textAlign="center">Déconnexion</Typography>
                 </MenuItem>
               </Menu>
