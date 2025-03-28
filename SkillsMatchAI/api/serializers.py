@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from jobs.models import (
     JobFamily, Skill, Job, Position, 
-    Employee, EmployeeSkill, PositionSkill
+    Employee, EmployeeSkill, PositionSkill,
+    Evaluation
 )
 from django.contrib.auth.models import User
 
@@ -173,4 +174,29 @@ class EmployeeSerializer(CustomFieldMixin, serializers.ModelSerializer):
     
     class Meta:
         model = Employee
-        fields = '__all__' 
+        fields = '__all__'
+
+
+class EvaluationSerializer(serializers.ModelSerializer):
+    qualitative_level = serializers.ReadOnlyField()
+    employee_name = serializers.SerializerMethodField()
+    skill_name = serializers.ReadOnlyField(source='skill.name')
+    
+    class Meta:
+        model = Evaluation
+        fields = ('id', 'employee', 'employee_name', 'skill', 'skill_name', 
+                  'quantitative_level', 'qualitative_level', 'qualitative_description', 
+                  'evaluation_date', 'evaluated_by')
+    
+    def get_employee_name(self, obj):
+        try:
+            return f"{obj.employee.first_name} {obj.employee.last_name}" if obj.employee else "Inconnu"
+        except Exception as e:
+            print(f"Error getting employee name: {e}")
+            return "Inconnu"
+
+
+class EvaluationCreateUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Evaluation
+        fields = ('employee', 'skill', 'quantitative_level', 'qualitative_description', 'evaluated_by') 

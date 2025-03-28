@@ -8,13 +8,14 @@ from rest_framework.decorators import api_view, permission_classes
 
 from jobs.models import (
     JobFamily, Skill, Job, Position, 
-    Employee, EmployeeSkill, PositionSkill
+    Employee, EmployeeSkill, PositionSkill, Evaluation
 )
 from .serializers import (
     JobFamilySerializer, SkillSerializer, JobSerializer, JobDetailSerializer,
     PositionListSerializer, PositionDetailSerializer,
     EmployeeListSerializer, EmployeeDetailSerializer, EmployeeSkillSerializer,
-    PositionSkillSerializer, UserSerializer
+    PositionSkillSerializer, UserSerializer,
+    EvaluationSerializer, EvaluationCreateUpdateSerializer
 )
 from django.contrib.auth.models import User
 
@@ -184,3 +185,46 @@ class PositionSkillViewSet(viewsets.ModelViewSet):
     filterset_fields = ['position', 'skill', 'importance_level', 'is_required']
     ordering_fields = ['position__job__title', 'skill__name', 'importance_level']
     ordering = ['position__job__title', 'skill__name']
+
+
+class EvaluationViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint pour gérer les évaluations de compétences.
+    """
+    queryset = Evaluation.objects.all()
+    serializer_class = EvaluationSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['employee', 'skill', 'quantitative_level', 'evaluation_date']
+    search_fields = ['employee__first_name', 'employee__last_name', 'skill__name', 'qualitative_description']
+    ordering_fields = ['evaluation_date', 'quantitative_level']
+    
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return EvaluationCreateUpdateSerializer
+        return EvaluationSerializer
+    
+    @action(detail=False, methods=['get'])
+    def by_employee(self, request):
+        """
+        Récupère toutes les évaluations pour un employé spécifique.
+        """
+        employee_id = request.query_params.get('employee_id')
+        if not employee_id:
+            return Response({"error": "employee_id parameter is required"}, status=400)
+        
+        evaluations = self.queryset.filter(employee_id=employee_id)
+        serializer = self.get_serializer(evaluations, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def by_skill(self, request):
+        """
+        Récupère toutes les évaluations pour une compétence spécifique.
+        """
+        skill_id = request.query_params.get('skill_id')
+        if not skill_id:
+            return Response({"error": "skill_id parameter is required"}, status=400)
+        
+        evaluations = self.queryset.filter(skill_id=skill_id)
+        serializer = self.get_serializer(evaluations, many=True)
+        return Response(serializer.data)

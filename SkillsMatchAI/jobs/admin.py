@@ -6,7 +6,8 @@ from .models import (
     Position, 
     Employee, 
     EmployeeSkill,
-    PositionSkill
+    PositionSkill,
+    Evaluation
 )
 
 @admin.register(JobFamily)
@@ -159,3 +160,10 @@ class PositionSkillAdmin(admin.ModelAdmin):
     list_filter = ('importance_level', 'is_required', 'skill')
     search_fields = ('position__job__title', 'skill__name', 'description')
     ordering = ('position__job__title', 'skill__name')
+
+@admin.register(Evaluation)
+class EvaluationAdmin(admin.ModelAdmin):
+    list_display = ('employee', 'skill', 'quantitative_level', 'qualitative_level', 'evaluation_date')
+    list_filter = ('quantitative_level', 'evaluation_date')
+    search_fields = ('employee__first_name', 'employee__last_name', 'skill__name')
+    autocomplete_fields = ('employee', 'skill', 'evaluated_by')

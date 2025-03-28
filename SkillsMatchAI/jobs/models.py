@@ -202,6 +202,22 @@ class Employee(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
+    def get_evaluation_for_skill(self, skill_id):
+        """Récupère l'évaluation d'un employé pour une compétence spécifique."""
+        try:
+            return self.evaluations.get(skill_id=skill_id)
+        except Evaluation.DoesNotExist:
+            return None
+    
+    def get_all_evaluations(self):
+        """Récupère toutes les évaluations de l'employé avec leurs niveaux."""
+        return self.evaluations.all().select_related('skill')
+    
+    def get_skill_level(self, skill_id):
+        """Récupère le niveau d'une compétence spécifique pour l'employé."""
+        evaluation = self.get_evaluation_for_skill(skill_id)
+        return evaluation.quantitative_level if evaluation else 0
+
 # Maintenant que Employee est défini, nous pouvons ajouter la référence à Employee dans Position
 Position.employee = models.ForeignKey(
     Employee,
@@ -284,3 +300,35 @@ class PositionSkill(models.Model):
         importance = self.get_importance_level_display()
         required = "Obligatoire" if self.is_required else "Optionnelle"
         return f"{self.position} - {self.skill} (Importance: {importance}, {required})"
+
+class Evaluation(models.Model):
+    LEVEL_CHOICES = [
+        (1, 'Débutant'),
+        (2, 'Intermédiaire'),
+        (3, 'Confirmé'),
+        (4, 'Avancé'),
+        (5, 'Expert')
+    ]
+    
+    employee = models.ForeignKey('Employee', on_delete=models.CASCADE, related_name='evaluations')
+    skill = models.ForeignKey('Skill', on_delete=models.CASCADE, related_name='evaluations')
+    quantitative_level = models.IntegerField(choices=LEVEL_CHOICES, default=1)
+    qualitative_description = models.TextField(blank=True, null=True)
+    evaluated_by = models.ForeignKey('Employee', on_delete=models.SET_NULL, null=True, related_name='evaluations_given')
+    evaluation_date = models.DateField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('employee', 'skill')
+        verbose_name = 'Évaluation de compétence'
+        verbose_name_plural = 'Évaluations de compétences'
+    
+    def __str__(self):
+        return f"{self.employee} - {self.skill} - Niveau {self.quantitative_level}"
+    
+    @property
+    def qualitative_level(self):
+        """Retourne la description textuelle du niveau."""
+        for level, description in self.LEVEL_CHOICES:
+            if level == self.quantitative_level:
+                return description
+        return None

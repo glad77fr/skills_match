@@ -11,7 +11,8 @@ from rest_framework import permissions
 from .views import (
     UserViewSet, JobFamilyViewSet, SkillViewSet, JobViewSet,
     PositionViewSet, EmployeeViewSet,
-    EmployeeSkillViewSet, PositionSkillViewSet
+    EmployeeSkillViewSet, PositionSkillViewSet,
+    EvaluationViewSet
 )
 
 # Configuration de Swagger/OpenAPI
@@ -38,6 +39,7 @@ router.register(r'positions', PositionViewSet)
 router.register(r'employees', EmployeeViewSet)
 router.register(r'employee-skills', EmployeeSkillViewSet)
 router.register(r'position-skills', PositionSkillViewSet)
+router.register(r'evaluations', EvaluationViewSet)
 
 urlpatterns = [
     # API routes
