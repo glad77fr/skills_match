@@ -180,4 +180,137 @@ Dans la version 2.0, le modèle `Department` a été complètement supprimé de 
 6. Suppression de l'enregistrement du viewset dans `api/urls.py`
 7. Création et application d'une migration pour supprimer les tables correspondantes
 
-Cette modification simplifie la structure de la base de données et réduit la complexité de l'application. 
+Cette modification simplifie la structure de la base de données et réduit la complexité de l'application.
+
+### Version 2.1 - Ajout des champs personnalisés (Custom Fields)
+
+Cette version introduit un système flexible de champs personnalisés pour les entités principales de l'application. 
+Cette fonctionnalité permet aux administrateurs de définir des attributs supplémentaires pour les Jobs, Positions, Employés et Compétences, afin de s'adapter aux besoins spécifiques de différentes organisations ou projets.
+
+#### Nouveaux modèles
+
+1. **CustomField**
+   - Représente la définition d'un champ personnalisé
+   - Attributs:
+     - `name`: Nom du champ (ex: "Niveau de responsabilité")
+     - `field_type`: Type de champ (text, number, date, boolean, select)
+     - `model_type`: Type de modèle associé (job, position, employee, skill)
+     - `description`: Description du champ
+     - `required`: Indique si le champ est obligatoire
+     - `options`: Options pour les champs de type select (séparées par des virgules)
+
+2. **CustomFieldValue**
+   - Stocke la valeur d'un champ personnalisé pour un objet spécifique
+   - Utilise le système de ContentType de Django pour une association générique
+   - Attributs:
+     - `custom_field`: Référence au champ personnalisé
+     - `content_type` et `object_id`: Association avec l'objet concerné
+     - `value`: Valeur stockée (sous forme de texte)
+
+#### Extensions des modèles existants
+
+Tous les modèles principaux (Job, Position, Employee, Skill, JobFamily) ont été enrichis avec les méthodes:
+- `get_custom_fields()`: Récupère toutes les valeurs des champs personnalisés
+- `get_custom_field_value(field_name)`: Récupère la valeur d'un champ spécifique
+- `set_custom_field_value(field_name, value)`: Définit la valeur d'un champ
+
+#### API REST pour les champs personnalisés
+
+Nouvelles routes API:
+- `/api/custom-fields/` - CRUD pour les définitions de champs personnalisés
+- `/api/custom-field-values/` - CRUD pour les valeurs des champs
+- `/api/custom-field/set-value/` - Endpoint spécial pour définir une valeur
+
+Les sérialiseurs des modèles existants ont été mis à jour pour inclure automatiquement les champs personnalisés dans les réponses API.
+
+#### Utilisation
+
+**Création d'un champ personnalisé (par un administrateur)**
+
+1. Accéder à l'interface d'administration Django
+2. Créer un nouveau CustomField, en spécifiant:
+   - Le nom du champ
+   - Le type de champ (texte, nombre, date, booléen, sélection)
+   - Le modèle auquel il s'applique
+   - Une description et si le champ est obligatoire
+   - Pour les champs de type "select", définir les options
+
+**Définition d'une valeur via l'API**
+
+```
+POST /api/custom-field/set-value/
+{
+  "model_name": "job",
+  "object_id": 1,
+  "field_name": "Niveau de responsabilité",
+  "value": "Niveau 3"
+}
+```
+
+**Récupération des valeurs via l'API**
+
+Les champs personnalisés sont automatiquement inclus dans les réponses API sous la clé `custom_fields`:
+
+```json
+{
+  "id": 1,
+  "title": "Développeur Full Stack",
+  "level": "Senior",
+  // autres champs...
+  "custom_fields": [
+    {
+      "id": 5,
+      "custom_field": 3,
+      "custom_field_name": "Niveau de responsabilité",
+      "field_type": "text",
+      "value": "Niveau 3"
+    }
+  ]
+}
+```
+
+**Filtrage des champs personnalisés**
+
+Pour récupérer uniquement les valeurs des champs personnalisés d'un objet:
+
+```
+GET /api/custom-field-values/?content_type_id=8&object_id=1
+```
+
+## Correctif des champs personnalisés pour les positions
+
+Un problème a été résolu concernant l'affichage des champs personnalisés pour les positions dans l'API REST. 
+
+### Problème
+Les champs personnalisés (`custom_field1`, `custom_field1_label`, etc.) n'étaient pas retournés correctement dans la réponse de l'API pour les positions, alors qu'ils fonctionnaient normalement pour les autres modèles.
+
+### Solution
+Le problème a été résolu en modifiant le sérialiseur `PositionListSerializer` dans `api/serializers.py` pour inclure explicitement tous les champs personnalisés dans la liste `fields` de la classe `Meta`.
+
+```python
+class PositionListSerializer(CustomFieldMixin, serializers.ModelSerializer):
+    """Sérialiseur pour la liste des positions."""
+    job_title = serializers.ReadOnlyField(source='job.title')
+    job_level = serializers.ReadOnlyField(source='job.level')
+    employee_name = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Position
+        fields = ('id', 'job', 'job_title', 'job_level', 'location', 'status', 'employee_name',
+                 'custom_field1', 'custom_field1_label', 'custom_field1_visible',
+                 'custom_field2', 'custom_field2_label', 'custom_field2_visible',
+                 'custom_field3', 'custom_field3_label', 'custom_field3_visible',
+                 'custom_field4', 'custom_field4_label', 'custom_field4_visible')
+```
+
+### Test de validation
+Après la modification, les champs personnalisés sont maintenant correctement renvoyés dans les résultats de l'API. 
+De plus, la propriété `custom_fields` contient désormais les champs personnalisés visibles avec leurs valeurs grâce au mixin `CustomFieldMixin`.
+
+### Utilisation des champs personnalisés
+Pour rendre un champ personnalisé visible dans l'API, vous devez :
+1. Définir une valeur pour le champ (exemple : `custom_field1 = "Valeur test"`)
+2. Définir le libellé du champ (exemple : `custom_field1_label = "Mon libellé"`)
+3. Rendre le champ visible (exemple : `custom_field1_visible = True`)
+
+Une fois ces trois conditions remplies, le champ apparaîtra dans le tableau `custom_fields` de la réponse JSON. 

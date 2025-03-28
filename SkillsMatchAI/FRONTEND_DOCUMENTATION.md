@@ -423,3 +423,80 @@ La structure de mise en page a été améliorée pour garantir que la navbar est
 12. Optimisation des transitions pour garantir une expérience utilisateur fluide lors de l'ouverture et de la fermeture de la sidebar
 
 Ces modifications assurent une expérience utilisateur cohérente avec une navigation toujours accessible, tout en simplifiant la structure du code et en évitant la duplication. La possibilité de fermer la sidebar et l'optimisation de l'espace offrent également une meilleure utilisation de l'espace écran, particulièrement utile pour visualiser des tableaux de données volumineux. 
+
+## Gestion des champs personnalisés
+
+### Vue d'ensemble
+
+SkillsMatchAI permet de configurer des champs personnalisés pour les différentes entités métier (Métiers, Positions, Employés, Compétences). Chaque entité dispose de 4 champs personnalisés qui peuvent être activés ou désactivés, et dont les libellés peuvent être personnalisés selon les besoins de l'organisation.
+
+### Interface utilisateur
+
+La configuration des champs personnalisés se fait depuis la page **Paramètres** de l'application, accessible via le menu principal. Cette page comporte deux onglets :
+- **Préférences générales** : pour les paramètres généraux de l'application
+- **Champs personnalisés** : pour configurer les champs personnalisés des différentes entités
+
+#### Fonctionnalités disponibles
+
+Dans l'onglet "Champs personnalisés", l'administrateur peut :
+
+1. **Sélectionner le type d'entité** à configurer (Métiers, Positions, Employés, Compétences)
+2. **Activer/désactiver** la visibilité de chaque champ personnalisé
+3. **Personnaliser le libellé** de chaque champ
+4. **Enregistrer les modifications** qui seront appliquées à tous les éléments du type sélectionné
+
+### Implémentation technique
+
+#### Structure du code
+
+La fonctionnalité est implémentée à travers les composants et services suivants :
+
+- **SettingsPage.js** : Page React qui présente l'interface utilisateur pour configurer les champs personnalisés
+- **settingsService.js** : Service qui gère les appels API et la logique de transformation des données
+
+#### Service API (settingsService.js)
+
+Le service fournit les méthodes suivantes :
+
+- `getCustomFieldsForModel(modelType)` : Récupère les informations de configuration des champs personnalisés pour un type de modèle donné
+- `updateCustomFields(modelType, customFieldsData)` : Met à jour les champs personnalisés pour tous les éléments d'un type donné
+- `extractCustomFieldsConfig(data)` : Extrait la configuration des champs personnalisés à partir des données d'un objet
+- `prepareCustomFieldsUpdateData(customFields)` : Prépare les données pour la mise à jour des champs personnalisés
+
+#### SettingsPage.js
+
+Le composant SettingsPage gère l'état local et l'interface utilisateur pour :
+
+- Charger les données des champs personnalisés au chargement initial
+- Permettre la modification des libellés et de la visibilité des champs
+- Enregistrer les modifications via le service API
+- Afficher les notifications de succès ou d'erreur
+
+### Utilisation des champs personnalisés dans l'application
+
+Les champs personnalisés configurés apparaissent dans les formulaires de création/édition et dans les vues détaillées des entités correspondantes. Les champs désactivés n'apparaissent pas dans l'interface utilisateur.
+
+Dans les listes et tableaux, les champs personnalisés visibles apparaissent comme des colonnes supplémentaires, avec le libellé personnalisé comme en-tête.
+
+### Tests
+
+La fonctionnalité est testée via des tests unitaires dans le fichier `SettingsPage.test.js`, qui vérifient :
+
+- L'affichage correct de l'interface utilisateur
+- Le chargement des données au démarrage
+- La modification de la visibilité et des libellés
+- L'enregistrement des modifications
+
+### Exemple d'utilisation
+
+Cas d'usage : Une entreprise souhaite ajouter des informations spécifiques pour les postes, comme le "Niveau de responsabilité" et le "Service".
+
+L'administrateur peut :
+1. Accéder à la page Paramètres
+2. Sélectionner l'onglet "Champs personnalisés"
+3. Choisir "Positions" comme type d'entité
+4. Activer le premier champ personnalisé et le renommer en "Niveau de responsabilité"
+5. Activer le deuxième champ personnalisé et le renommer en "Service"
+6. Enregistrer les modifications
+
+Ces deux champs personnalisés seront alors visibles et utilisables dans toutes les interfaces liées aux positions. 

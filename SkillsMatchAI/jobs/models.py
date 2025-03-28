@@ -1,5 +1,8 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from datetime import datetime
 
 class JobFamily(models.Model):
     """
@@ -36,30 +39,51 @@ class Skill(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     category = models.CharField(max_length=100, blank=True, null=True)
+    
+    # Champs personnalisés fixes
+    custom_field1 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field1_label = models.CharField(max_length=100, default="Champ personnalisé 1")
+    custom_field1_visible = models.BooleanField(default=False)
+    
+    custom_field2 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field2_label = models.CharField(max_length=100, default="Champ personnalisé 2")
+    custom_field2_visible = models.BooleanField(default=False)
+    
+    custom_field3 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field3_label = models.CharField(max_length=100, default="Champ personnalisé 3")
+    custom_field3_visible = models.BooleanField(default=False)
+    
+    custom_field4 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field4_label = models.CharField(max_length=100, default="Champ personnalisé 4")
+    custom_field4_visible = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
 
 class Job(models.Model):
-    """
-    Définit le profil type d'un emploi avec ses exigences et compétences requises.
-    
-    Cette classe sert de template pour la création de positions concrètes dans l'organisation.
-    Elle définit les caractéristiques standards d'un poste, indépendamment de son instance
-    spécifique ou de son titulaire.
-    
-    Attributes:
-        title (str): L'intitulé du poste
-        description (text): Description détaillée du poste et de ses responsabilités
-        level (str): Niveau du poste dans la hiérarchie
-        job_family (JobFamily): La famille de métiers à laquelle appartient ce poste
-        required_skills (ManyToManyField): Les compétences requises pour ce poste
-    """
+    """Définit le profil type d'un emploi"""
     title = models.CharField(max_length=100)
     description = models.TextField()
     level = models.CharField(max_length=50)
     job_family = models.ForeignKey(JobFamily, on_delete=models.PROTECT, related_name='jobs')
     required_skills = models.ManyToManyField(Skill, related_name='jobs')
+    
+    # Champs personnalisés fixes
+    custom_field1 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field1_label = models.CharField(max_length=100, default="Champ personnalisé 1")
+    custom_field1_visible = models.BooleanField(default=False)
+    
+    custom_field2 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field2_label = models.CharField(max_length=100, default="Champ personnalisé 2")
+    custom_field2_visible = models.BooleanField(default=False)
+    
+    custom_field3 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field3_label = models.CharField(max_length=100, default="Champ personnalisé 3")
+    custom_field3_visible = models.BooleanField(default=False)
+    
+    custom_field4 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field4_label = models.CharField(max_length=100, default="Champ personnalisé 4")
+    custom_field4_visible = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.title} - Level {self.level}"
@@ -91,6 +115,23 @@ class Position(models.Model):
         default=Status.VACANT
     )
     start_date = models.DateField(default=timezone.now)
+    
+    # Champs personnalisés fixes
+    custom_field1 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field1_label = models.CharField(max_length=100, default="Champ personnalisé 1")
+    custom_field1_visible = models.BooleanField(default=False)
+    
+    custom_field2 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field2_label = models.CharField(max_length=100, default="Champ personnalisé 2")
+    custom_field2_visible = models.BooleanField(default=False)
+    
+    custom_field3 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field3_label = models.CharField(max_length=100, default="Champ personnalisé 3")
+    custom_field3_visible = models.BooleanField(default=False)
+    
+    custom_field4 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field4_label = models.CharField(max_length=100, default="Champ personnalisé 4")
+    custom_field4_visible = models.BooleanField(default=False)
     
     # La référence à Employee sera ajoutée après la définition de la classe Employee
     # pour éviter les références circulaires
@@ -140,6 +181,23 @@ class Employee(models.Model):
     profile_picture = models.URLField(blank=True, null=True)
     resume = models.URLField(blank=True, null=True)
     last_updated = models.DateTimeField(auto_now=True)
+    
+    # Champs personnalisés fixes
+    custom_field1 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field1_label = models.CharField(max_length=100, default="Champ personnalisé 1")
+    custom_field1_visible = models.BooleanField(default=False)
+    
+    custom_field2 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field2_label = models.CharField(max_length=100, default="Champ personnalisé 2")
+    custom_field2_visible = models.BooleanField(default=False)
+    
+    custom_field3 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field3_label = models.CharField(max_length=100, default="Champ personnalisé 3")
+    custom_field3_visible = models.BooleanField(default=False)
+    
+    custom_field4 = models.CharField(max_length=255, blank=True, null=True)
+    custom_field4_label = models.CharField(max_length=100, default="Champ personnalisé 4")
+    custom_field4_visible = models.BooleanField(default=False)
     
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, Q
+from rest_framework.decorators import api_view, permission_classes
 
 from jobs.models import (
     JobFamily, Skill, Job, Position, 

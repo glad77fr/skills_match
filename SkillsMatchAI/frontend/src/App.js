@@ -13,6 +13,7 @@ import SkillAnalyticsPage from './pages/SkillAnalyticsPage';
 import GapAnalysisPage from './pages/GapAnalysisPage';
 import LoginPage from './pages/Login';
 import UserSettingsPage from './pages/UserSettingsPage';
+import SettingsPage from './pages/SettingsPage';
 import './App.css';
 
 /**
@@ -119,7 +120,7 @@ function App() {
             path="/settings"
             element={
               <ProtectedLayout>
-                <UserSettingsPage />
+                <SettingsPage />
               </ProtectedLayout>
             }
           />

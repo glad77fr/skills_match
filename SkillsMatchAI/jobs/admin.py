@@ -23,6 +23,21 @@ class SkillAdmin(admin.ModelAdmin):
     list_filter = ('category',)
     search_fields = ('name', 'description', 'category')
     ordering = ('name',)
+    
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'description', 'category')
+        }),
+        ('Champs personnalisés', {
+            'fields': (
+                ('custom_field1', 'custom_field1_label', 'custom_field1_visible'),
+                ('custom_field2', 'custom_field2_label', 'custom_field2_visible'),
+                ('custom_field3', 'custom_field3_label', 'custom_field3_visible'),
+                ('custom_field4', 'custom_field4_label', 'custom_field4_visible'),
+            ),
+            'classes': ('collapse',)
+        }),
+    )
 
 class JobSkillInline(admin.TabularInline):
     """Affichage en ligne des compétences requises pour un Job."""
@@ -35,11 +50,23 @@ class JobSkillInline(admin.TabularInline):
 class JobAdmin(admin.ModelAdmin):
     """Interface d'administration pour le modèle Job."""
     list_display = ('title', 'level', 'job_family')
-    list_filter = ('level', 'job_family')
     search_fields = ('title', 'description')
-    inlines = [JobSkillInline]
-    exclude = ('required_skills',)  # Exclus car géré par l'inline
-    ordering = ('title',)
+    list_filter = ('level', 'job_family')
+    
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'description', 'level', 'job_family', 'required_skills')
+        }),
+        ('Champs personnalisés', {
+            'fields': (
+                ('custom_field1', 'custom_field1_label', 'custom_field1_visible'),
+                ('custom_field2', 'custom_field2_label', 'custom_field2_visible'),
+                ('custom_field3', 'custom_field3_label', 'custom_field3_visible'),
+                ('custom_field4', 'custom_field4_label', 'custom_field4_visible'),
+            ),
+            'classes': ('collapse',)
+        }),
+    )
 
 class PositionSkillInline(admin.TabularInline):
     """Affichage en ligne des compétences requises pour une Position."""
@@ -57,6 +84,21 @@ class PositionAdmin(admin.ModelAdmin):
     inlines = [PositionSkillInline]
     date_hierarchy = 'start_date'
     ordering = ('-start_date',)
+    
+    fieldsets = (
+        (None, {
+            'fields': ('job', 'location', 'status', 'start_date', 'employee')
+        }),
+        ('Champs personnalisés', {
+            'fields': (
+                ('custom_field1', 'custom_field1_label', 'custom_field1_visible'),
+                ('custom_field2', 'custom_field2_label', 'custom_field2_visible'),
+                ('custom_field3', 'custom_field3_label', 'custom_field3_visible'),
+                ('custom_field4', 'custom_field4_label', 'custom_field4_visible'),
+            ),
+            'classes': ('collapse',)
+        }),
+    )
     
     def get_employee(self, obj):
         """Retourne le nom de l'employé ou 'Non assigné' si aucun employé n'est assigné."""
@@ -87,6 +129,15 @@ class EmployeeAdmin(admin.ModelAdmin):
         }),
         ('Documents et médias', {
             'fields': ('profile_picture', 'resume'),
+            'classes': ('collapse',)
+        }),
+        ('Champs personnalisés', {
+            'fields': (
+                ('custom_field1', 'custom_field1_label', 'custom_field1_visible'),
+                ('custom_field2', 'custom_field2_label', 'custom_field2_visible'),
+                ('custom_field3', 'custom_field3_label', 'custom_field3_visible'),
+                ('custom_field4', 'custom_field4_label', 'custom_field4_visible'),
+            ),
             'classes': ('collapse',)
         }),
     )

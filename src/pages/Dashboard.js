@@ -18,19 +18,16 @@ import {
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import WorkIcon from '@mui/icons-material/Work';
-import BusinessIcon from '@mui/icons-material/Business';
 import PsychologyIcon from '@mui/icons-material/Psychology';
 import { getEmployees } from '../services/employeeService';
 import { getPositions } from '../services/positionService';
 import { getSkills } from '../services/skillService';
-import api from '../services/api';
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     employees: 0,
     positions: 0,
-    departments: 0,
     skills: 0
   });
   const [recentEmployees, setRecentEmployees] = useState([]);
@@ -42,18 +39,16 @@ const Dashboard = () => {
         setLoading(true);
         
         // Récupérer les données de base
-        const [employeesRes, positionsRes, skillsRes, departmentsRes] = await Promise.all([
+        const [employeesRes, positionsRes, skillsRes] = await Promise.all([
           getEmployees(),
           getPositions(),
-          getSkills(),
-          api.get('departments/')
+          getSkills()
         ]);
         
         // Mettre à jour les statistiques
         setStats({
           employees: employeesRes.data.count || 0,
           positions: positionsRes.data.count || 0,
-          departments: departmentsRes.data.count || 0,
           skills: skillsRes.data.count || 0
         });
         
@@ -90,7 +85,7 @@ const Dashboard = () => {
       
       {/* Cartes de statistiques */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <Card sx={{ height: '100%' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -109,7 +104,7 @@ const Dashboard = () => {
           </Card>
         </Grid>
         
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <Card sx={{ height: '100%' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -128,26 +123,7 @@ const Dashboard = () => {
           </Card>
         </Grid>
         
-        <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ height: '100%' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <BusinessIcon color="primary" sx={{ fontSize: 40, mr: 2 }} />
-                <Typography variant="h5" component="div">
-                  {stats.departments}
-                </Typography>
-              </Box>
-              <Typography color="text.secondary">
-                Départements
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button size="small" component={RouterLink} to="/departments">Voir tous</Button>
-            </CardActions>
-          </Card>
-        </Grid>
-        
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <Card sx={{ height: '100%' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -181,7 +157,7 @@ const Dashboard = () => {
                     <ListItem>
                       <ListItemText
                         primary={`${employee.first_name} ${employee.last_name}`}
-                        secondary={employee.department_name || 'Aucun département'}
+                        secondary={employee.email || 'Aucun email'}
                       />
                       <Button 
                         size="small" 
