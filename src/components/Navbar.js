@@ -24,6 +24,7 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import PersonIcon from '@mui/icons-material/Person';
 import WorkIcon from '@mui/icons-material/Work';
+import BusinessIcon from '@mui/icons-material/Business';
 import PsychologyIcon from '@mui/icons-material/Psychology';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -32,7 +33,8 @@ import SettingsIcon from '@mui/icons-material/Settings';
 const pages = [
   { name: 'Tableau de bord', path: '/', icon: <DashboardIcon /> },
   { name: 'Employés', path: '/employees', icon: <PersonIcon /> },
-  { name: 'Positions', path: '/positions', icon: <WorkIcon /> },
+  { name: 'Métiers', path: '/jobs', icon: <BusinessIcon /> },
+  { name: 'Postes', path: '/positions', icon: <WorkIcon /> },
   { name: 'Compétences', path: '/skills', icon: <PsychologyIcon /> }
 ];
 

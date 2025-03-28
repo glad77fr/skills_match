@@ -8,6 +8,7 @@ import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import EmployeeList from './pages/EmployeeList';
+import JobList from './pages/JobList';
 import Settings from './pages/Settings';
 
 // Créer un thème personnalisé
@@ -36,6 +37,7 @@ function App() {
             <Route element={<PrivateLayout />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/employees" element={<EmployeeList />} />
+              <Route path="/jobs" element={<JobList />} />
               <Route path="/settings" element={<Settings />} />
               {/* Ajouter d'autres routes ici */}
             </Route>
